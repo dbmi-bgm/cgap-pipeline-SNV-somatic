@@ -9,7 +9,7 @@ requirements:
 
 hints:
   - class: DockerRequirement
-    dockerPull: ACCOUNT/sv_germline:VERSION
+    dockerPull: ACCOUNT/snv_somatic:VERSION
 
 baseCommand: [python3, /usr/local/bin/somatic_sentieon_vcf_splitter.py]
 
@@ -41,7 +41,7 @@ inputs:
   - id: sv_pass
     type: string
     inputBinding:
-      prefix: -d
+      prefix: -v
     doc: base name of the SV PASS-filtered output vcf gz file
 
 outputs:

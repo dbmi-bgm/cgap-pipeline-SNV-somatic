@@ -54,6 +54,10 @@ RUN git clone https://github.com/vcftools/vcftools.git && \
 COPY multiple_vcf-integrity-check.sh .
 RUN chmod +x multiple_vcf-integrity-check.sh
 
+# python and pysam (required for VEP)
+RUN conda install python=3.6.8 && \
+    conda clean -a -y -f
+
 # granite
 RUN pip install granite-suite==0.1.13
 

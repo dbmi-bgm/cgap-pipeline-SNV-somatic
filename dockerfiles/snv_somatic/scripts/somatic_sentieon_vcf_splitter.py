@@ -48,6 +48,7 @@ def main(args):
 
     #open sample VCF
     vcf = vcf_parser.Vcf(args['inputvcf'])
+    vcf.header.definitions = vcf.header.definitions.replace('\\t','%09') #sentieon command with \t is an illegal character in the vcf
 
     with open(args['full'], 'w') as full, open(args['snv'], 'w') as SNV, open(args['indel'], 'w') as INDEL, open(args['sv'], 'w') as SV:
         for file in [full, SNV, INDEL, SV]:

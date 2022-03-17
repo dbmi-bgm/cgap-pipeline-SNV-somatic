@@ -24,7 +24,7 @@ outputs:
   - id: output
     type: File
     outputBinding:
-      glob: *_integrity_check
+      glob: integrity_check_$(inputs.input.basename)
 
 doc: |
   run a quick integrity check on the input vcf file

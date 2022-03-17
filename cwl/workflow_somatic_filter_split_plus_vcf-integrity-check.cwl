@@ -31,7 +31,6 @@ inputs:
     doc: base name of the SV PASS-filtered output vcf gz file
 
 outputs:
-
   full_pass_vcf:
     type: File
     outputSource: somatic_sentieon_vcf_splitter/full_pass
@@ -48,9 +47,21 @@ outputs:
     type: File
     outputSource: somatic_sentieon_vcf_splitter/sv_pass
 
-  vcf-check:
+  full_vcf-check:
     type: File
-    outputSource: integrity-check/output
+    outputSource: full_integrity-check/output
+
+  snv_vcf-check:
+    type: File
+    outputSource: snv_integrity-check/output
+
+  indel_vcf-check:
+    type: File
+    outputSource: indel_integrity-check/output
+
+  sv_vcf-check:
+    type: File
+    outputSource: sv_integrity-check/output
 
 steps:
   somatic_sentieon_vcf_splitter:
