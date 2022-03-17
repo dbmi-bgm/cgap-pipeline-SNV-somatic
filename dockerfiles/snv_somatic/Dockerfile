@@ -1,41 +1,11 @@
-FROM 4dndcic/ubuntu16.04-miniconda-python36:v1
+FROM cgap/cgap-ubuntu2104-py-38:0.0.1
 MAINTAINER Phil Grayson (phil.d.grayson@gmail.com), Michele Berselli (berselli.michele@gmail.com)
 
-# general updates & installing necessary Linux components
-RUN apt-get update && apt-get install -y \
-    nano \
-    htop \
-    bzip2 \
-    gcc \
-    g++ \
-    git \
-    less \
-    libncurses-dev \
-    make \
-    time \
-    zip \
-    unzip \
-    vim \
-    wget \
-    zlib1g-dev \
-    liblz4-tool \
-    libbz2-dev \
-    liblzma-dev \
-    locales \
-    parallel \
+RUN apt-get update -y && apt-get install -y \
     autoconf \
-    autogen \
-    autotools-dev \
-    automake \
     pkg-config \
-    tabix \
-    yasm \
-    libdbi-perl \
-    libmodule-build-perl \
-    libarchive-zip-perl \
-    libmysqlclient-dev \
-    libpng-dev \
-    libexpat1-dev
+    bzip2 \
+    tabix
 
 WORKDIR /usr/local/bin
 
@@ -54,10 +24,6 @@ RUN git clone https://github.com/vcftools/vcftools.git && \
 COPY multiple_vcf-integrity-check.sh .
 RUN chmod +x multiple_vcf-integrity-check.sh
 
-# python and pysam (required for VEP)
-RUN conda install python=3.6.8 && \
-    conda clean -a -y -f
-
 # granite
 RUN pip install granite-suite==0.1.13
 
@@ -66,9 +32,5 @@ COPY scripts/somatic_sentieon_vcf_splitter.py .
 RUN chmod +x somatic_sentieon_vcf_splitter.py
 COPY scripts/SV_bnd_converter.py .
 RUN chmod +x SV_bnd_converter.py
-
-# supporting UTF-8
-RUN locale-gen "en_US.UTF-8" && update-locale LC_ALL="en_US.UTF-8"
-ENV LC_ALL=en_US.UTF-8
 
 CMD ["bash"]
