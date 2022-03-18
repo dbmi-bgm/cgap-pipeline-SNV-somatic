@@ -4,7 +4,7 @@ MAINTAINER Phil Grayson (phil.d.grayson@gmail.com), Michele Berselli (berselli.m
 RUN apt-get update -y && apt-get install -y \
     autoconf \
     pkg-config \
-    bzip2 \
+    locales \
     tabix
 
 WORKDIR /usr/local/bin
@@ -32,5 +32,9 @@ COPY scripts/somatic_sentieon_vcf_splitter.py .
 RUN chmod +x somatic_sentieon_vcf_splitter.py
 COPY scripts/SV_bnd_converter.py .
 RUN chmod +x SV_bnd_converter.py
+
+# supporting UTF-8
+RUN locale-gen "en_US.UTF-8" && update-locale LC_ALL="en_US.UTF-8"
+ENV LC_ALL=en_US.UTF-8
 
 CMD ["bash"]
