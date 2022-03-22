@@ -1,4 +1,4 @@
-FROM cgap/cgap-ubuntu2104-py-38:0.0.1
+FROM cgap/cgap-ubuntu2004-py-38:0.0.1
 MAINTAINER Phil Grayson (phil.d.grayson@gmail.com), Michele Berselli (berselli.michele@gmail.com)
 
 RUN apt-get update -y && apt-get install -y \
