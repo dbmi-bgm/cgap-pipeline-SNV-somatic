@@ -34,7 +34,7 @@ RUN git clone https://github.com/vcftools/vcftools.git && \
     cd ..
 
 ## granite
-RUN pip install granite-suite==0.1.13
+RUN pip install granite-suite==0.2.0
 
 #######################################################################
 #     Scripts
