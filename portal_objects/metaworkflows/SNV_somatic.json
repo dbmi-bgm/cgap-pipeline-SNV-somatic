@@ -12,26 +12,6 @@
         "argument_name": "input_vcf",
         "argument_type": "file",
         "dimensionality": 1
-    },
-    {
-        "argument_name": "full_pass",
-        "argument_type": "parameter",
-        "value_type": "string"
-    },
-    {
-        "argument_name": "snv_pass",
-        "argument_type": "parameter",
-        "value_type": "string"
-    },
-    {
-        "argument_name": "indel_pass",
-        "argument_type": "parameter",
-        "value_type": "string"
-    },
-    {
-        "argument_name": "sv_pass",
-        "argument_type": "parameter",
-        "value_type": "string"
     }
   ],
   "workflows": [
@@ -72,27 +52,7 @@
         {
             "argument_name": "input_vcf",
             "argument_type": "file",
-            "dimensionality": 1
-        },
-        {
-            "argument_name": "full_pass",
-            "argument_type": "parameter",
-            "value_type": "string"
-        },
-        {
-            "argument_name": "snv_pass",
-            "argument_type": "parameter",
-            "value_type": "string"
-        },
-        {
-            "argument_name": "indel_pass",
-            "argument_type": "parameter",
-            "value_type": "string"
-        },
-        {
-            "argument_name": "sv_pass",
-            "argument_type": "parameter",
-            "value_type": "string"
+            "input_dimension": 1
         }
       ]
     }
