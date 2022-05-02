@@ -1,0 +1,100 @@
+{
+  "accession": "GAPMWFBOJ84B",
+  "name": "SNV_somatic",
+  "title": "SNV somatic VERSION",
+  "version": "VERSION",
+  "uuid": "79bb6d7d-c504-4820-9adb-a13a816a5356",
+  "description": "Split somatic VCF to SNV, INDEL, and SV for visualization",
+  "project": "PROJECT_UUID",
+  "institution": "INSTITUTION_UUID",
+  "input": [
+    {
+        "argument_name": "input_vcf",
+        "argument_type": "file",
+        "dimensionality": 1
+    },
+    {
+        "argument_name": "full_pass",
+        "argument_type": "parameter",
+        "value_type": "string"
+    },
+    {
+        "argument_name": "snv_pass",
+        "argument_type": "parameter",
+        "value_type": "string"
+    },
+    {
+        "argument_name": "indel_pass",
+        "argument_type": "parameter",
+        "value_type": "string"
+    },
+    {
+        "argument_name": "sv_pass",
+        "argument_type": "parameter",
+        "value_type": "string"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "workflow_somatic_filter_split_vcf-check",
+      "workflow": "933e8aae-cab7-4881-b430-8be765e94be0",
+      "config": {
+        "instance_type": "t3.small",
+        "ebs_size": "3x",
+        "EBS_optimized": true,
+        "spot_instance": true,
+        "run_name": "run_workflow_somatic_filter_split_vcf-check",
+        "behavior_on_capacity_limit": "wait_and_retry"
+      },
+      "custom_pf_fields": {
+          "full_pass_vcf": {
+              "file_type": "full PASS vcf",
+              "variant_type": "SNV",
+              "description": "somatic vcf filtered for PASS variants"
+          },
+          "snv_pass_vcf": {
+              "file_type": "snv PASS vcf",
+              "variant_type": "SNV",
+              "description": "somatic vcf filtered for PASS variants and for SNVs only"
+          },
+          "indel_pass_vcf": {
+              "file_type": "indel PASS vcf",
+              "variant_type": "SNV",
+              "description": "somatic vcf filtered for PASS variants and for INDELs only"
+          },
+          "sv_pass_vcf": {
+              "file_type": "sv PASS vcf",
+              "variant_type": "SV",
+              "description": "somatic vcf filtered for PASS variants and for SVs only"
+          }
+      },
+      "input": [
+        {
+            "argument_name": "input_vcf",
+            "argument_type": "file",
+            "dimensionality": 1
+        },
+        {
+            "argument_name": "full_pass",
+            "argument_type": "parameter",
+            "value_type": "string"
+        },
+        {
+            "argument_name": "snv_pass",
+            "argument_type": "parameter",
+            "value_type": "string"
+        },
+        {
+            "argument_name": "indel_pass",
+            "argument_type": "parameter",
+            "value_type": "string"
+        },
+        {
+            "argument_name": "sv_pass",
+            "argument_type": "parameter",
+            "value_type": "string"
+        }
+      ]
+    }
+  ]
+}
