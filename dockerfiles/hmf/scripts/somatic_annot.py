@@ -4,6 +4,7 @@ import argparse
 from granite.lib.vcf_parser import Vcf
 import pandas
 import subprocess
+import gzip
 
 gene_field= 'SYMBOL'
 CSQ_tag  = 'CSQ'
@@ -136,7 +137,7 @@ class HartwigDecisionTree:
 
 
 def build_from_tsv(input_tsv):
-    input_file = csv.DictReader(open(input_tsv),  delimiter = '\t')
+    input_file = csv.DictReader(gzip.open(input_tsv),  delimiter = '\t')
     results = []
     fields = ["chrom", "start", "end", "gene", "category"]
     for inn in input_file:
