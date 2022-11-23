@@ -1,9 +1,9 @@
 
-################################################
+##########################################################
 #
-#  Script to TODO
+#  Script to identify putative drivers for SNVs and INDELs
 #
-################################################
+##########################################################
 
 
 
@@ -37,10 +37,14 @@ def main(args):
     CSQ_tag  = 'CSQ'
     gene_field= 'SYMBOL'
     consequence_field = 'Consequence'
+    HGVSc_field = 'HGVSc' 
+    HGVSp_field = 'HGVSp'
 
 
     idx_gene = vcf_obj.header.get_tag_field_idx(CSQ_tag, gene_field) 
     idx_variant_cons = vcf_obj.header.get_tag_field_idx(CSQ_tag, consequence_field) 
+    idx_HGVSc =  vcf_obj.header.get_tag_field_idx(CSQ_tag, HGVSc_field)
+    idx_HGVSp = vcf_obj.header.get_tag_field_idx(CSQ_tag, HGVSp_field)
 
 
     gene_panel = pandas.read_csv(args['gene_panel'], sep ='\t')
@@ -64,17 +68,20 @@ def main(args):
             if hotspot_candidate:
                 gene_hostpot = hotspot_dict[hotspot_key].get_tag_value("input").split("|")[0]
 
-            DRIVER = 0 
+            DRIVER = "-"
             for transcript in transcripts:
                 
                 transcript_fields = transcript.split("|")
                 gene = transcript_fields[idx_gene]
                 consequence = transcript_fields[idx_variant_cons]
+                HGVSc = transcript_fields[idx_HGVSc].split(":")[0]
+                HGVSp = transcript_fields[idx_HGVSp].split(":")[0]
                 
 
                 if ('missense_variant' in consequence and ((report_missense['gene'] == gene)).any()) or (('frameshift_variant' in consequence or 'stop_gained' in consequence) and ((report_nonsense['gene'] == gene)).any()):
-                    DRIVER = 1
-                    break
+                    print("kkk")
+                    DRIVER = f"{gene}|{HGVSc}|{HGVSp}"
+                    
 
 
             vnt_obj.add_tag_info(f"DRIVER={DRIVER}")
@@ -106,7 +113,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "-s",
         "--hotspot",
-        help="",
+        help="VCF containing hotspot mutations",
         required=True,
     )
     

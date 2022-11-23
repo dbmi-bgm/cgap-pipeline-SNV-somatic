@@ -1,0 +1,30 @@
+## Workflow information #####################################
+#     General information for the workflow
+#############################################################
+name: driver_annot
+description: TODO
+
+runner:
+  language: cwl
+  main: driver_catalog.cwl
+
+
+## Input information ########################################
+#     Input files and parameters
+#############################################################
+input:
+
+  vcf:
+    argument_type: file.vcf_gz
+  cnv:
+    argument_type: file.tsv_gz
+
+  
+
+
+## Output information #######################################
+#     Output files and quality controls
+#############################################################
+output:
+  driver_annot_vcf:
+    argument_type: file.json

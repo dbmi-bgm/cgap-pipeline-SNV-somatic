@@ -1,0 +1,53 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: drivers_dump_json
+description: TODO
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  vcf:
+    argument_type: file.vcf_gz
+    dimensionality: 1
+  
+  cnv:
+    argument_type: file.tsv_gz
+   
+workflows:
+  dump_drivers:
+    input:
+      vcf:
+        argument_type: file.vcf_gz
+        dimensionality: 1
+      cnv:
+        argument_type: file.tsv_gz
+        dimensionality: 1
+    
+    output:
+      driver_json:
+        description: todo
+        file_type: TODO
+    
+    config:
+        instance_type: c5.4xlarge
+        ebs_size: 1.6x
+        EBS_optimized: True
+        spot_instance: False
+        run_name: run_driver_annot
+        behavior_on_capacity_limit: wait_and_retry
+      
+
+      
+
+
+
+  
+
+  
+  
+
+  

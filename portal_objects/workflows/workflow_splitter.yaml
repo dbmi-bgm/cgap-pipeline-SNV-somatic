@@ -1,0 +1,36 @@
+## Workflow information #####################################
+#     General information for the workflow
+#############################################################
+name: splitter
+description: TODO
+
+runner:
+  language: cwl
+  main: somatic_sentieon_vcf_splitter1.cwl
+
+software:
+  - granite@0.2.0
+
+## Input information ########################################
+#     Input files and parameters
+#############################################################
+input:
+
+  input:
+    argument_type: file.vcf_gz
+
+
+## Output information #######################################
+#     Output files and quality controls
+#############################################################
+output:
+  indel_snv_pass:
+    argument_type: file.vcf_gz
+    secondary_files:
+      - vcf_gz_tbi
+
+
+  sv_bnd:
+    argument_type: file.vcf_gz
+    secondary_files:
+      - vcf_gz_tbi
