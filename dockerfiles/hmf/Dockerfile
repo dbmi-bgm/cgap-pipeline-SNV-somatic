@@ -24,7 +24,7 @@ WORKDIR /usr/local/bin
 #     Software
 #######################################################################
 ## granite
-RUN pip install granite-suite==0.2.0
+RUN pip install granite-suite==0.2.0 pandas
 
 #######################################################################
 #     Scripts

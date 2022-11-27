@@ -27,4 +27,4 @@ input:
 #############################################################
 output:
   driver_annot_vcf:
-    argument_type: file.json
+    argument_type: file.vcf_gz
