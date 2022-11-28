@@ -9,7 +9,7 @@ software:
   - vep@101
 
 input: 
-  input:
+  input_vcf:
     argument_type: file.vcf_gz
   reference:
     argument_type: file.fa
@@ -49,7 +49,7 @@ input:
     argument_type: parameter.string
 
 output:
-  output:
+  annotated_vcf:
     argument_type: file.vcf_gz
     secondary_file:
       - vcf_gz_tbi

@@ -24,19 +24,22 @@ inputs:
     type: File
     inputBinding:
       prefix: -c
-    doc: 
+    doc: SV file containing somatic CNVs
+
   - id: output
     type: string
     inputBinding:
         prefix: -o
+    default: 'output.json'
+    doc: output file name
 
 outputs:
 
-  - id: driver_annot_json
+  - id: driver_json
     type: File
     outputBinding:
       glob: $(inputs.output)
     secondaryFiles:
       - .tbi
 doc: |
-  todo
+  JSON including reported putative drivers

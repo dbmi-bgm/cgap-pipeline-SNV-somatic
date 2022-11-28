@@ -2,7 +2,7 @@
 #     General information for the workflow
 #############################################################
 name: dump_drivers
-description: TODO
+description: Create a single JSON file compatible with GoScan to store annotated putative driver mutations.
 
 runner:
   language: cwl
@@ -18,9 +18,6 @@ input:
     argument_type: file.vcf_gz
   cnv:
     argument_type: file.tsv_gz
-
-  
-  
 
 
 ## Output information #######################################

@@ -14,7 +14,7 @@ hints:
 baseCommand: [vep-annot.sh]
 
 inputs:
-  - id: input
+  - id: input_vcf
     type: File
     inputBinding:
       position: 1
@@ -154,7 +154,7 @@ inputs:
     doc: genome assembly version
 
 outputs:
-  - id: output
+  - id: annotated_vcf
     type: File
     outputBinding:
       glob: combined.vep.vcf.gz

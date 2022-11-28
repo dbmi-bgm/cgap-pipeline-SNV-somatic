@@ -23,15 +23,15 @@ WORKDIR /usr/local/bin
 #######################################################################
 #     Software
 #######################################################################
-## granite
-RUN pip install granite-suite==0.2.0 pandas
+## granite pandas
+RUN pip install granite-suite==0.2.0 pandas==1.5.2
 
 #######################################################################
 #     Scripts
 #######################################################################
 
 
-## snv_somatic scripts: driver_catalog.py
+## snv_somatic scripts: somatic_annot.py
 COPY scripts/somatic_annot.py .
 RUN chmod +x somatic_annot.py
 

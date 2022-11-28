@@ -14,7 +14,7 @@ hints:
 baseCommand: [python3, /usr/local/bin/somatic_annot.py, driverCatalogVCF ] 
 
 inputs:
-  - id: input
+  - id: input_vcf
     type: File
     inputBinding:
       prefix: -i
@@ -24,18 +24,20 @@ inputs:
     type: File
     inputBinding:
       prefix: -g
-    doc: 
+    doc: gene panel configuration created by Hartwig Medical Foundation
 
   - id: somatic_hotspot
     type: File
     inputBinding:
         prefix: -s
+    doc: vcf containing hotspot mutations
 
   - id: output
     type: string
     inputBinding:
         prefix: -o
     default: output.vcf
+    doc: vcf file containing annotated putative drivers
 
 outputs:
 
@@ -46,4 +48,4 @@ outputs:
     secondaryFiles:
       - .tbi
 doc: |
-  todo
+  vcf containing reported putative drivers

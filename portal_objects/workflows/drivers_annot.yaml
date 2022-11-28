@@ -2,11 +2,14 @@
 #     General information for the workflow
 #############################################################
 name: driver_annot
-description: TODO
+description: Annotate putative driver mutations in a VCF file 
 
 runner:
   language: cwl
   main: driver_annot.cwl
+
+software:
+  - granite@0.2.0
 
 
 ## Input information ########################################
@@ -14,10 +17,18 @@ runner:
 #############################################################
 input:
 
-  vcf:
+  input_vcf:
     argument_type: file.vcf_gz
-  cnv:
+  gene_panel:
     argument_type: file.tsv_gz
+  somatic_hotspot:
+    argument_type: file.vcf_gz
+
+output:
+  driver_annot_vcf:
+    argument_type: file.vcf_gz
+
+
 
   
 

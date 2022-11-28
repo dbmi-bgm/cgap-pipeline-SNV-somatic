@@ -1,13 +1,6 @@
-## Pipeline information #####################################
-#     General information for the pipeline
-#############################################################
 name: drivers_dump_json
-description: TODO
+description: Save driver mutations (SNVs, INDELs, CNVs) in a JSON file.
 
-## General arguments ########################################
-#     Pipeline input, reference files, and general arguments
-#       define all arguments for the pipeline here
-#############################################################
 input:
 
   vcf:
@@ -16,21 +9,22 @@ input:
   
   cnv:
     argument_type: file.tsv_gz
+    dimensionality: 1 
    
 workflows:
   dump_drivers:
     input:
       vcf:
         argument_type: file.vcf_gz
-        dimensionality: 1
+        input_dimension: 1
       cnv:
         argument_type: file.tsv_gz
-        dimensionality: 1
+        input_dimension: 1
     
     output:
       driver_json:
-        description: todo
-        file_type: TODO
+        description: JSON file containing driver mutations for SNVs, INDELs and CNVs
+        file_type: GosCan compatible JSON
     
     config:
         instance_type: c5.4xlarge
