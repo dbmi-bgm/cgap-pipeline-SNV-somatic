@@ -9,7 +9,7 @@ requirements:
 
 hints:
   - class: DockerRequirement
-    dockerPull: ACCOUNT/hmf:VERSION
+    dockerPull: ACCOUNT/somatic_drivers:VERSION
 
 baseCommand: [python3, /usr/local/bin/somatic_annot.py, driverCatalogVCF ] 
 
