@@ -52,7 +52,6 @@ def main(args):
     )  # sentieon command with \t is an illegal character in the vcf
 
     full_file = snv_file = indel_file = None
-    files = []
     prefix = args["prefix"] 
     
     full_file = open(f"{prefix}_full.vcf", "w")
@@ -61,15 +60,15 @@ def main(args):
     files_dict = {}
     if len(args["output"]) > 0:
 
+        # to have an unique list of variants types and sorted for the output file name so we know what suffix to expect
         args["output"] = [sorted(list(set(v))) for v in args["output"]]
 
         for comb in args["output"]:
-            name = "_".join(comb)
-            files_dict[name] = open(f"{prefix}_{name}.vcf", "w")
-            files.append(files_dict[name])
+            suffix = "_".join(comb)
+            files_dict[suffix] = open(f"{prefix}_{suffix}.vcf", "w")
 
-    for file in files:
-        vcf.write_header(file)
+    for key in files_dict.keys():
+        vcf.write_header(files_dict[key])
 
     for vnt_obj in vcf.parse_variants():
 
@@ -78,30 +77,21 @@ def main(args):
 
         variant_type = get_variant_type(vnt_obj)
 
-        if variant_type == SNV:
-            for comb in args["output"]:
-                if SNV in comb:
+        
+        for comb in args["output"]:
+            if (SNV in comb and variant_type == SNV) or (variant_type in [INS, DEL, MNV] and INDEL in comb) :
+                vcf.write_variant(files_dict["_".join(comb)], vnt_obj)
+            elif variant_type == SV:
+                sv_type = shared_functions.variant_type_sv(vnt_obj)
+                if sv_type in comb:
+                    vcf.write_variant(files_dict["_".join(comb)], vnt_obj)
+                if ALL in comb:
                     vcf.write_variant(files_dict["_".join(comb)], vnt_obj)
 
-        if variant_type in [INS, DEL, MNV]:
-            for comb in args["output"]:
-                if INDEL in comb:
-                    vcf.write_variant(files_dict["_".join(comb)], vnt_obj)
 
-        #print(variant_type)
-        if variant_type == SV and len(list(files_dict.keys())) > 0:
-            sv_type = shared_functions.variant_type_sv(vnt_obj)
-            for sv_comb in args["output"]:
-                #print(sv_type, " ", sv_comb)
-                if sv_type in sv_comb:
-                    vcf.write_variant(files_dict["_".join(sv_comb)], vnt_obj)
-                if ALL in sv_comb:
-                    vcf.write_variant(files_dict["_".join(sv_comb)], vnt_obj)
-
-    for file in files:
-        file.close()
-        subprocess.run(["bgzip", file.name])
-        subprocess.run(["tabix", file.name + ".gz"])
+    for key in files_dict.keys():
+        subprocess.run(["bgzip", files_dict[key]])
+        subprocess.run(["tabix", files_dict[key] + ".gz"])
 
 
 ################################################
