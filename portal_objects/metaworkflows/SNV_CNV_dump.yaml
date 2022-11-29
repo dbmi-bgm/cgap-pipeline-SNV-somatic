@@ -1,4 +1,4 @@
-name: drivers_dump_json
+name: Somatic Drivers to JSON
 description: Save driver mutations (SNVs, INDELs, CNVs) in a JSON file.
 
 input:
@@ -12,6 +12,7 @@ input:
     dimensionality: 1 
    
 workflows:
+
   dump_drivers:
     input:
       vcf:
