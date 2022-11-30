@@ -13,8 +13,9 @@ HGVSc_field = "HGVSc"
 HGVSp_field = "HGVSp"
 CANONICAL_field = "CANONICAL"
 DRIVER_field = "DRIVER"
-DRIVER_DEFAULT = "-"
+HOTSPOT_field = "HOTSPOT"
 CATEGORY_SNV_INDEL = "mutational"
+
 
 
 class Driver:
@@ -34,24 +35,26 @@ class DriverSnvIndel(Driver):
         HGVSp=None,
         allele_fraction=None,
         mutation_type=None,
-        **kwargs,
+        hotspot = False,
+        **kwargs
     ):
 
         self.chrom = vnt_obj.CHROM
         self.pos = vnt_obj.POS
         self.ref = vnt_obj.REF
         self.alt = vnt_obj.ALT
-        self.transcript_consequence = HGVSc.split(":")[1]
-        self.protein_mutation = HGVSp.split(":")[1]
-        self.ens_gene = HGVSc.split(":")[0]
-        self.ens_st = HGVSp.split(":")[0]
+        self.transcript_consequence = HGVSc.split(":")[1] if HGVSc else None
+        self.protein_mutation = HGVSp.split(":")[1] if HGVSp else None
+        self.ens_gene = HGVSc.split(":")[0] if HGVSc else None
+        self.ens_st = HGVSp.split(":")[0] if HGVSp else None
         self.allele_fraction = allele_fraction
         self.mutation_type = mutation_type
+        self.hotspot = hotspot
         super().__init__(**kwargs)
 
     def to_dict(self):
         fields = vars(self)
-        return {k: v for (k, v) in fields.items() if k not in ["ens_gene", "ens_st"]}
+        return {k: v for (k, v) in fields.items() if k not in ["ens_gene", "ens_st", "hotspot"]}
 
     def __str__(self):
         return f"{self.gene}|{self.ens_gene}|{self.ens_st}"
@@ -83,6 +86,8 @@ class HartwigDecisionTree:
                 gene_panel["reportNonsense"] == True, ["gene"]
             ].values.tolist()
         ]
+
+        self.non_canonical = gene_panel.set_index('gene')['additionalReportedTranscripts'].dropna().to_dict()
         self.hotspot_dict = {}
         hotspot_vcf = Vcf(hotspot_mutations)
 
@@ -112,18 +117,43 @@ class HartwigDecisionTree:
         idx_HGVSp = vcf_obj.header.get_tag_field_idx(CSQ_tag, HGVSp_field)
         idx_CANONICAL = vcf_obj.header.get_tag_field_idx(CSQ_tag, CANONICAL_field)
 
+        def check_non_canonical(gene, transcript):
+            if gene in self.non_canonical.keys():
+                if transcript in self.non_canonical[gene]:
+                    return True
+            return False
+        
+        def check_hotspot(vnt_obj):
+            vnt_key = self.__create_hotspot_key(vnt_obj)
+            if vnt_key in self.hotspot_dict.keys():
+                return self.hotspot_dict[vnt_key]
+            else:
+                return None      
+        def query_hotspot(vnt_obj):
+            hotspot = check_hotspot(vnt_obj)
+            if hotspot:
+                return hotspot.get_tag_value("input")
+            else: 
+                return None
+            
         def query(vnt_obj):
-
             transcripts = vnt_obj.get_tag_value(CSQ_tag).split(",")
             drivers = []
+
+            
+
             for transcript in transcripts:
                 transcript_fields = transcript.split("|")
                 gene = transcript_fields[idx_gene]
+                #HGVSc = transcript_fields[idx_HGVSc]
+                #transcript = HGVSc.split(":")[0]                    
                 consequence = transcript_fields[idx_variant_cons]
-                HGVSc = transcript_fields[idx_HGVSc]
-                HGVSp = transcript_fields[idx_HGVSp]
-                CANONICAL = transcript_fields[idx_CANONICAL]
-
+                #HGVSp = transcript_fields[idx_HGVSp]
+                ADD_TRANSCRIPT = False
+                if transcript_fields[idx_CANONICAL] == "YES":
+                    ADD_TRANSCRIPT = True
+                else:
+                   ADD_TRANSCRIPT = check_non_canonical(gene, transcript)
                 if (
                     (
                         ("missense_variant" in consequence)
@@ -136,39 +166,42 @@ class HartwigDecisionTree:
                         )
                         and (gene in self.report_nonsense)
                     )
-                ) and CANONICAL == "YES":
-                    tumor_sample = vnt_obj.IDs_genotypes[0]
-                    af = vnt_obj.get_genotype_value(tumor_sample, "AF")
+                ) and ADD_TRANSCRIPT == True:
+                    #tumor_sample = vnt_obj.IDs_genotypes[0]
+                    #af = vnt_obj.get_genotype_value(tumor_sample, "AF")
                     drivers.append(
                         DriverSnvIndel(
                             vnt_obj=vnt_obj,
-                            HGVSc=HGVSc,
-                            HGVSp=HGVSp,
-                            allele_fraction=af,
-                            mutation_type=consequence,
-                            category=CATEGORY_SNV_INDEL,
-                            gene=gene,
-                        )
+                            gene=gene)
                     )
             return drivers
 
         if save_vcf == None:
             for vnt_obj in vcf_obj.parse_variants():
                 all_drivers += query(vnt_obj)
+
         else:
             with open(save_vcf, "w") as output:
                 vcf_obj.header.add_tag_definition(
-                    f'##INFO=<ID={DRIVER_field},Number=1,Type=Integer,Description="Flag if variant is a putative driver mutation calculated based on Hartwig\'s decision tree (1 if driver, otherwise 0)">',
+                    f'##INFO=<ID={DRIVER_field},Number=1,Type=String,Description="Putative driver mutation calculated based on Hartwig\'s decision tree. Format: ">',
+                    tag_type="INFO",
+                )
+                vcf_obj.header.add_tag_definition(
+                    f'##INFO=<ID={HOTSPOT_field},Number=1,Type=String,Description="Somatic hotspot location. Format: ">',
                     tag_type="INFO",
                 )
                 vcf_obj.write_header(output)
                 for vnt_obj in vcf_obj.parse_variants():
-                    DRIVER = DRIVER_DEFAULT
                     drivers = query(vnt_obj)
+                    
                     all_drivers += drivers
                     if len(drivers) > 0:
                         DRIVER = ",".join([str(d) for d in drivers])
-                    vnt_obj.add_tag_info(f"{DRIVER_field}={DRIVER}")
+                        vnt_obj.add_tag_info(f"{DRIVER_field}={DRIVER}")
+                    
+                    hotspot = query_hotspot(vnt_obj)
+                    if hotspot:
+                        vnt_obj.add_tag_info(f"{HOTSPOT_field}={hotspot}")
                     vcf_obj.write_variant(output, vnt_obj)
 
             subprocess.run(["bgzip", save_vcf])
@@ -202,8 +235,14 @@ def build_from_vcf(input_vcf):
     idx_CANONICAL = vcf_obj.header.get_tag_field_idx(CSQ_tag, CANONICAL_field)
 
     for vnt_obj in vcf_obj.parse_variants():
-        driver = vnt_obj.get_tag_value(DRIVER_field)
-
+        try:
+            hotspot = vnt_obj.get_tag_value(HOTSPOT_field)
+        try:
+            driver = vnt_obj.get_tag_value(DRIVER_field)
+        except Exception:
+            continue 
+        tumor_sample = vnt_obj.IDs_genotypes[0]
+        af = vnt_obj.get_genotype_value(tumor_sample, "AF")
         if driver != DRIVER_DEFAULT:
             drivers = driver.split(",")
             transcripts = vnt_obj.get_tag_value(CSQ_tag).split(",")
@@ -220,8 +259,7 @@ def build_from_vcf(input_vcf):
                     consequence = transcript_fields[idx_variant_cons]
                     HGVSc = transcript_fields[idx_HGVSc]
                     HGVSp = transcript_fields[idx_HGVSp]
-                    tumor_sample = vnt_obj.IDs_genotypes[0]
-                    af = vnt_obj.get_genotype_value(tumor_sample, "AF")
+
                     records.append(
                         DriverSnvIndel(
                             vnt_obj=vnt_obj,
