@@ -1,0 +1,257 @@
+## Pipeline information #####################################
+#     General information for the pipeline
+#############################################################
+name: SNV_somatic_annotation
+description: Downstream pipeline to annotate SNV somatic variants
+
+## General arguments ########################################
+#     Pipeline input, reference files, and general arguments
+#       define all arguments for the pipeline here
+#############################################################
+input:
+
+  input_vcf:
+    argument_type: file.vcf_gz
+    dimensionality: 1
+  
+  reference:
+    argument_type: file.fa
+    files:
+      - 1936f246-22e1-45dc-bb5c-9cfd55537fe7
+  
+  regions:
+    argument_type: file.txt
+    files:
+      - 1c07a3aa-e2a3-498c-b838-15991c4a2f28
+  
+  vep:
+    argument_type: file.vep_tar
+    files:
+      - ea103486-b65a-4439-9d0b-1186f8e59388
+  
+  clinvar:
+    argument_type: file.vcf_gz
+    files:
+      - 7db786d5-13d2-4622-bdd2-99866036b9b9
+
+  dbnsfp:
+    argument_type: file.dbnsfp_gz
+    files:
+      - dc02df4c-49ac-4532-b85c-02800941aa44
+
+  maxent:
+    argument_type: file.tar_gz
+    files:
+      - 71a7d16b-8452-4266-ae80-bbede2e305e2
+
+  spliceai_snv:
+    argument_type: file.vcf_gz
+    files:
+      - a35e580c-7579-4312-a3a1-66810e6d9366
+
+  spliceai_indel:
+    argument_type: file.vcf_gz
+    files:
+      - 3b7c0c29-5ee2-47c8-95a8-d28e15d5de47
+
+  gnomad:
+    argument_type: file.vcf_gz
+    files:
+      - 52c6cbf6-ae94-4c10-ad03-26ed34f74a3e
+
+  gnomad2:
+    argument_type: file.vcf_gz
+    files:
+      - dd6f0384-d0b5-47d6-99a8-395c0b72feed
+
+  CADD_snv:
+    argument_type: file.tsv_gz
+    files:
+      - 672de47f-d058-4dbd-9fc4-3e134cfe71d8
+
+  CADD_indel:
+    argument_type: file.tsv_gz
+    files:
+      - b9f123dd-be05-4a14-957a-5e1e5a5ce254
+
+  phylop30bw:
+    argument_type: file.BigWig
+    files:
+      - f6809af1-f7b9-43c0-882a-16764ccc431d
+  
+  phylop100bw:
+    argument_type: file.BigWig
+    files:
+      - af93aecb-6b8e-4c8b-b159-eefb3f9d0ffb
+
+  phastc100bw:
+    argument_type: file.BigWig
+    files:
+      - 19f03828-175b-4594-ba1a-52ddabcf640d
+  
+  gene_panel:
+    argument_type: file.tsv_gz
+    files:
+      - bd334693-b83e-4709-9d96-d8cc3f524848
+  
+  somatic_hotspot:
+    argument_type: file.vcf_gz
+    files:
+      - 19f548db-5491-464c-babd-a9f4f0b2c8c4
+
+
+  version: 
+    argument_type: parameter.string
+    value: "101"
+
+  assembly:
+    argument_type: parameter.string
+    value: "GRCh38"
+
+
+  
+
+
+
+## Workflows and dependencies ###############################
+#     Information for the workflows and their dependencies
+#############################################################
+workflows:
+
+  ## Workflow definition #####################
+  #  splitter
+  ############################################
+  splitter:
+
+    ## Workflow arguments ##############
+    ####################################
+    input:
+
+      input:
+        argument_type: file.vcf_gz
+        scatter: 1
+        
+
+
+    ## Output ##########################
+    ####################################
+    output:
+
+      indel_snv_pass:
+        description: VCF containing SNVs and INDELs of the input VCF #reads (from .cram) in FASTQ format
+        file_type: raw VCF #reads (from .cram)
+
+      sv_bnd:
+        description: VCF containing SVs of the input VCF #reads (from .cram) in FASTQ format
+        file_type: raw VCF
+
+
+    ## EC2 Configuration to use ########
+    ####################################
+    config:
+        instance_type: [t3.large, t3.xlarge, c5.4xlarge] 
+        ebs_size: 1.6x
+        EBS_optimized: True
+        spot_instance: False
+        run_name: run_splitter
+        behavior_on_capacity_limit: wait_and_retry
+  
+  ## Workflow definition #####################
+  #  vep
+  ############################################
+  vep:
+    
+    input:
+
+      input_vcf:
+        argument_type: file.vcf_gz
+        dimensionality: 1
+        source: splitter
+        source_argument_name: indel_snv_pass
+
+      reference:
+        argument_type: file.fa
+      regions:
+        argument_type: file.txt
+      vep:
+        argument_type: file.vep_tar
+      clinvar:
+        argument_type: file.vcf_gz
+      dbnsfp:
+        argument_type: file.dbnsfp_gz
+      maxent:
+        argument_type: file.tar_gz
+      spliceai_snv:
+        argument_type: file.vcf_gz
+      spliceai_indel:
+        argument_type: file.vcf_gz
+      gnomad:
+        argument_type: file.vcf_gz
+      gnomad2:
+        argument_type: file.vcf_gz  
+      
+      CADD_snv:
+        argument_type: file.tsv_gz
+      CADD_indel:
+        argument_type: file.tsv_gz
+      phylop30bw:
+        argument_type: file.BigWig
+      phylop100bw:
+        argument_type: file.BigWig
+      phastc100bw:
+        argument_type: file.BigWig
+      version: 
+        argument_type: parameter.string
+      assembly:
+        argument_type: parameter.string
+      
+    output:
+
+      output:
+        description: output from VEP in the VCF format
+        file_type: annotated VCF
+    
+    config:
+        instance_type: [m6a.24xlarge, m6a.32xlarge]
+        ebs_size: 1.35x
+        EBS_optimized: True
+        spot_instance: False
+        run_name: run_vep
+        behavior_on_capacity_limit: wait_and_retry
+  
+  driver_annot:
+    input:
+      input_vcf:
+        argument_type: file.vcf_gz
+        dimensionality: 1
+        source: vep
+        source_argument_name: annotated_vcf
+      gene_panel:
+        argument_type: file.tsv_gz
+      somatic_hotspot:
+        argument_type: file.vcf_gz
+    
+    output:
+      driver_annot_vcf:
+        description: annotated VCF containing putative drivers
+        file_type: annotated vCF
+    
+    config:
+        instance_type: [t3.large, t3.xlarge, c5.4xlarge] 
+        ebs_size: 1.6x
+        EBS_optimized: True
+        spot_instance: False
+        run_name: run_driver_annot
+        behavior_on_capacity_limit: wait_and_retry
+      
+
+      
+
+
+
+  
+
+  
+  
+
+  

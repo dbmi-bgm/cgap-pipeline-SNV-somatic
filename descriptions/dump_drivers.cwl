@@ -9,7 +9,7 @@ requirements:
 
 hints:
   - class: DockerRequirement
-    dockerPull: ACCOUNT/somatic_drivers:VERSION
+    dockerPull: ACCOUNT/driver_catalog:VERSION
 
 baseCommand: [python3, /usr/local/bin/somatic_annot.py, dumpJSON ] 
 

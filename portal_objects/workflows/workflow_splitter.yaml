@@ -6,7 +6,7 @@ description: Split SNVs and INDELs from SVs
 
 runner:
   language: cwl
-  main: somatic_sentieon_vcf_splitter1.cwl
+  main: somatic_sentieon_vcf_splitter.cwl
 
 software:
   - granite@0.2.0

@@ -1,4 +1,4 @@
-name: Somatic_Drivers_to_JSON
+name: somatic_drivers_to_JSON
 description: Save driver mutations (SNVs, INDELs, CNVs) in a JSON file.
 
 input:
@@ -24,8 +24,8 @@ workflows:
     
     output:
       driver_json:
-        description: JSON file containing driver mutations for SNVs, INDELs and CNVs
-        file_type: GosCan compatible JSON
+        description: GosCan compatible file containing driver mutations for SNVs, INDELs and CNVs
+        file_type: JSON
     
     config:
         instance_type: [t3.large, t3.xlarge]
