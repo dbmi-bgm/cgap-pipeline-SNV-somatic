@@ -219,7 +219,7 @@ workflows:
         run_name: run_vep
         behavior_on_capacity_limit: wait_and_retry
   
-  driver_annot:
+  drivers_annot:
     input:
       input_vcf:
         argument_type: file.vcf_gz
@@ -232,7 +232,7 @@ workflows:
         argument_type: file.vcf_gz
     
     output:
-      driver_annot_vcf:
+      drivers_annot_vcf:
         description: annotated VCF containing putative drivers
         file_type: annotated vCF
     
@@ -241,7 +241,7 @@ workflows:
         ebs_size: 1.6x
         EBS_optimized: True
         spot_instance: False
-        run_name: run_driver_annot
+        run_name: run_drivers_annot
         behavior_on_capacity_limit: wait_and_retry
       
 

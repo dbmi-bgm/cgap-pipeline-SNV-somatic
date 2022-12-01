@@ -32,7 +32,7 @@ workflows:
         ebs_size: 1.6x
         EBS_optimized: True
         spot_instance: False
-        run_name: run_driver_annot
+        run_name: run_drivers_dump
         behavior_on_capacity_limit: wait_and_retry
       
 
