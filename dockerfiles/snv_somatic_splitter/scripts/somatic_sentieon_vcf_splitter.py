@@ -23,7 +23,7 @@ CNV = 'cnv'
 DUP = 'dup'
 SV = 'sv'
 MAV = 'mav'
-ALL = "all"
+ALL_SV = "all_sv"
 INDEL = "ind"
 
 ################################################
@@ -51,11 +51,8 @@ def main(args):
         "\\t", "%09"
     )  # sentieon command with \t is an illegal character in the vcf
 
-    full_file = snv_file = indel_file = None
     prefix = args["prefix"] 
     
-    full_file = open(f"{prefix}_full.vcf", "w")
-    files.append(full_file)
     
     files_dict = {}
     if len(args["output"]) > 0:
@@ -85,13 +82,13 @@ def main(args):
                 sv_type = shared_functions.variant_type_sv(vnt_obj)
                 if sv_type in comb:
                     vcf.write_variant(files_dict["_".join(comb)], vnt_obj)
-                if ALL in comb:
+                if ALL_SV in comb:
                     vcf.write_variant(files_dict["_".join(comb)], vnt_obj)
 
 
     for key in files_dict.keys():
-        subprocess.run(["bgzip", files_dict[key]])
-        subprocess.run(["tabix", files_dict[key] + ".gz"])
+        subprocess.run(["bgzip", files_dict[key].name])
+        subprocess.run(["tabix", files_dict[key].name + ".gz"])
 
 
 ################################################
@@ -110,7 +107,7 @@ if __name__ == "__main__":
         nargs="+",
         action = 'append',
         required=False,
-        choices=[CNV, DEL, DUP, BND, INV, INS, DEL, ALL, SNV, INDEL],
+        choices=[CNV, DEL, DUP, BND, INV, INS, DEL, ALL_SV, SNV, INDEL],
     )
 
     parser.add_argument(

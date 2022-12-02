@@ -39,12 +39,25 @@ class DriverSnvIndel(Driver):
     A class used to represent a driver mutation for SNVs and INDELs
 
     :param vnt_obj : variant object
+    :type vnt_obj: Variant
+
     :param transcript_consequence: transcript consequence
+    :type transcript_consequence: str
+
     :param protein_mutation: protein mutation
+    :type protein_mutation: str
+
     :param ens_gene: ensembl transcript gene ID
+    :type ens_gene: str
+
     :param end_st: ensembl transcript protein ID
+    :type end_st: str
+
     :param mutation_type: mutation type
+    :type mutation_type: str
+
     :param hotspot: boolean value if it is a hotspot mutation
+    :type hotspot: str
 
     """
 
@@ -103,13 +116,18 @@ class DriverCnv(Driver):
     A class used to represent a driver mutation for CNVs
 
     :param chr : chromosome
+    :type chr: str
+
     :param start: start position of the segment
+    :type start: str
+
     :param end: end position of the segment
+    :type end: str
 
     """
 
-    def __init__(self, chr, start, end, **kwargs):
-        self.chr = chr
+    def __init__(self, chrom, start, end, **kwargs):
+        self.chrom = chrom
         self.start = start
         self.end = end
         super().__init__(**kwargs)
@@ -129,7 +147,10 @@ class HartwigDecisionTree:
     A class used to represent a Hartwig Decision Tree
 
     :param driver_panel: path to the driver panel used by HMF
+    :type driver_panel: str
+
     :param hotspot_mutations: path to the VCF file containg hotspot mutations
+    :type hotspot_mutations: str
 
     """
 
@@ -357,7 +378,7 @@ def build_from_tsv(input_tsv):
     """
     input_file = csv.DictReader(gzip.open(input_tsv, mode="rt"), delimiter="\t")
     results = []
-    fields = ["chr", "start", "end", "gene", "category"]
+    fields = ["chrom", "start", "end", "gene", "category"]
     for inn in input_file:
         record = dict(inn)
         if sorted(record.keys()) != sorted(fields):

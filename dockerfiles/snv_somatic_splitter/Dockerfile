@@ -39,9 +39,6 @@ RUN pip install granite-suite==0.2.0
 #######################################################################
 #     Scripts
 #######################################################################
-## multiple_vcf-integrity-check
-COPY multiple_vcf-integrity-check.sh .
-RUN chmod +x multiple_vcf-integrity-check.sh
 
 ## snv_somatic scripts: somatic_sentieon_vcf_splitter.py SV_bnd_converter.py
 COPY scripts/somatic_sentieon_vcf_splitter.py .

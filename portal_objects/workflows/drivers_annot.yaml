@@ -27,6 +27,8 @@ input:
 output:
   driver_annot_vcf:
     argument_type: file.vcf_gz
+    secondary_files:
+      - vcf_gz_tbi
 
 
 

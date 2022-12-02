@@ -16,7 +16,7 @@ software:
 #############################################################
 input:
 
-  input:
+  input_vcf:
     argument_type: file.vcf_gz
 
 
