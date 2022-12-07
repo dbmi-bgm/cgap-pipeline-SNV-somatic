@@ -89,8 +89,8 @@ def main(args):
     for key in files_dict.keys():
         pass
         files_dict[key].close()
-        #subprocess.run(["bgzip", files_dict[key].name])
-        #subprocess.run(["tabix", files_dict[key].name + ".gz"])
+        subprocess.run(["bgzip", files_dict[key].name])
+        subprocess.run(["tabix", files_dict[key].name + ".gz"])
 
 
 ################################################

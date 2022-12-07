@@ -19,12 +19,15 @@ def test_splitter(tmp_path):
     out_bnd = f"{prefix}_bnd.vcf"
 
     # Variables and Run
-    args = {"inputvcf": "test/files/in_splitter.vcf", "prefix": f"{prefix}", "output":[['snv', 'ind'], ['bnd']], "pass_only":False}
+    args = {"inputvcf": "test/files/in_splitter.vcf.gz", "prefix": f"{prefix}", "output":[['snv', 'ind'], ['bnd']], "pass_only":False}
 
     splitter.main(args)
-    result_snv_ind = filecmp.cmp(out_ind_snv, "test/files/out_splitter_snv_ind.vcf")
-    result_bnd = filecmp.cmp(out_bnd, "test/files/out_splitter_bnd.vcf")
 
-    # Test
-    assert result_snv_ind == True
-    assert result_bnd == True
+    a = os.popen(f'bgzip -c -d {out_ind_snv}.gz')
+    b = os.popen('bgzip -c -d "test/files/out_splitter_snv_ind.vcf.gz"')
+    assert [row for row in a.read()] == [row for row in b.read()]
+    
+
+    c = os.popen(f'bgzip -c -d {out_bnd}.gz')
+    d = os.popen(f'bgzip -c -d test/files/out_splitter_bnd.vcf.gz')
+    assert [row for row in c.read()] == [row for row in d.read()]
