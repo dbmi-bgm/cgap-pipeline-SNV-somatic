@@ -87,8 +87,10 @@ def main(args):
 
 
     for key in files_dict.keys():
-        subprocess.run(["bgzip", files_dict[key].name])
-        subprocess.run(["tabix", files_dict[key].name + ".gz"])
+        pass
+        files_dict[key].close()
+        #subprocess.run(["bgzip", files_dict[key].name])
+        #subprocess.run(["tabix", files_dict[key].name + ".gz"])
 
 
 ################################################
@@ -116,8 +118,8 @@ if __name__ == "__main__":
         help="only PASS variants",
         action = 'store_true',
         required=False,
+        default = False
     )
     
     args = vars(parser.parse_args())
-
     main(args)

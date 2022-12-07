@@ -7,7 +7,11 @@ import subprocess
 import gzip
 
 CSQ_tag = "CSQ"
-GENE_field = "SYMBOL"
+FEATURE_field = "Feature"
+FEATURE_TYPE_field = "Feature_type"
+SYMBOL_field = "SYMBOL"
+GENE_field = "Gene"
+TRANSCRIPT = "Transcript"
 CONSEQUENCE_field = "Consequence"
 HGVSc_field = "HGVSc"
 HGVSp_field = "HGVSp"
@@ -15,6 +19,7 @@ CANONICAL_field = "CANONICAL"
 DRIVER_field = "DRIVER"
 HOTSPOT_field = "HOTSPOT"
 CATEGORY_SNV_INDEL = "mutational"
+CANONICAL_TRUE = "YES"
 
 
 class Driver:
@@ -67,7 +72,7 @@ class DriverSnvIndel(Driver):
         transcript_consequence=None,
         protein_mutation=None,
         ens_gene=None,
-        ens_st=None,
+        transcript_id=None,
         mutation_type=None,
         hotspot=False,
         **kwargs,
@@ -78,7 +83,7 @@ class DriverSnvIndel(Driver):
         self.ref = vnt_obj.REF
         self.alt = vnt_obj.ALT
         self.ens_gene = ens_gene
-        self.ens_st = ens_st
+        self.transcript_id = transcript_id
         self.transcript_consequence = transcript_consequence
         self.protein_mutation = protein_mutation
         self.mutation_type = mutation_type
@@ -87,7 +92,7 @@ class DriverSnvIndel(Driver):
         tumor_sample = vnt_obj.IDs_genotypes[0]
         self.allele_fraction = vnt_obj.get_genotype_value(tumor_sample, "AF")
 
-        super().__init__(**kwargs)
+        super().__init__(category="mutational", **kwargs)
 
     def to_dict(self):
         """
@@ -101,14 +106,14 @@ class DriverSnvIndel(Driver):
         return {
             k: v
             for (k, v) in fields.items()
-            if k not in ["ens_gene", "ens_st", "hotspot"] and v != None
+            if k not in ["ens_gene", "transcript_id", "hotspot"] and v != None
         }
 
     def __str__(self):
         """
         String represation of the object, used for the DRIVER field in INFO.
         """
-        return f"{self.gene}|{self.ens_gene}|{self.ens_st}"
+        return f"{self.gene}|{self.ens_gene}|{self.transcript_id}"
 
 
 class DriverCnv(Driver):
@@ -174,6 +179,12 @@ class HartwigDecisionTree:
             .dropna()
             .to_dict()
         )
+        self.hotspot = [
+            gene[0]
+            for gene in gene_panel.loc[
+                gene_panel["reportSomaticHotspot"] == True, ["gene"]
+            ].values.tolist()
+        ]
         self.hotspot_dict = {}
         hotspot_vcf = Vcf(hotspot_mutations)
 
@@ -219,9 +230,9 @@ class HartwigDecisionTree:
         def query_hotspot(vnt_obj):
             vnt_key = self.__create_hotspot_key(vnt_obj)
             if vnt_key in self.hotspot_dict.keys():
-                return self.hotspot_dict[vnt_key].get_tag_value("input")
+                return True
             else:
-                return None
+                return False
 
         def query(vnt_obj):
             transcripts = vnt_obj.get_tag_value(CSQ_tag).split(",")
@@ -230,13 +241,15 @@ class HartwigDecisionTree:
 
             for transcript, values in transcripts_dict.items():
                 ADD_TRANSCRIPT = False
-                consequence = values["consequence"]
-                gene = values["gene"]
-                HGVSc = values["HGVSc"]
-                HGVSp = values["HGVSp"]
-                canonical = values["CANONICAL"]
+                consequence = values[CONSEQUENCE_field]
+                gene = values[SYMBOL_field]
+                ens_gene = values[GENE_field]
+                HGVSc = values[HGVSc_field]
+                HGVSp = values[HGVSp_field]
+                transcript_id = values[FEATURE_field]
+                canonical = values[CANONICAL_field]
 
-                if canonical == "YES":
+                if canonical == CANONICAL_TRUE:
                     ADD_TRANSCRIPT = True
                 else:
                     ADD_TRANSCRIPT = check_non_canonical(gene, transcript)
@@ -257,8 +270,8 @@ class HartwigDecisionTree:
                         DriverSnvIndel(
                             vnt_obj=vnt_obj,
                             gene=gene,
-                            ens_gene=HGVSc.split(":")[0],
-                            ens_st=HGVSp.split(":")[0],
+                            ens_gene=ens_gene,
+                            transcript_id=transcript_id,
                             transcript_consequence=HGVSc.split(":")[1],
                             protein_mutation=HGVSp.split(":")[1],
                         )
@@ -266,7 +279,7 @@ class HartwigDecisionTree:
             return drivers
 
         # Main
-        vcf_obj = VcfExtended(input_vcf)
+        vcf_obj = VcfVep(input_vcf)
         all_drivers = []
         if save_vcf == None:
             for vnt_obj in vcf_obj.parse_variants():
@@ -295,8 +308,23 @@ class HartwigDecisionTree:
 
                     # Check if it is a hotspot mutation
                     hotspot = query_hotspot(vnt_obj)
+
                     if hotspot:
-                        vnt_obj.add_tag_info(f"{HOTSPOT_field}={hotspot}")
+                        hotspot_genes = []
+                        transcripts_dict = vcf_obj.create_transcripts_dict(vnt_obj)
+
+                        for _, v in transcripts_dict.items():
+                            if (
+                                v[SYMBOL_field] in self.hotspot
+                                and v[SYMBOL_field] not in hotspot_genes
+                            ):
+                                hotspot_genes += [v[SYMBOL_field]]
+
+                        if len(hotspot_genes) > 0:
+                            vnt_obj.add_tag_info(
+                                f"{HOTSPOT_field}={'|'.join(hotspot_genes)}"
+                            )
+
                     vcf_obj.write_variant(output, vnt_obj)
 
             subprocess.run(["bgzip", save_vcf])
@@ -305,7 +333,7 @@ class HartwigDecisionTree:
         return all_drivers
 
 
-class VcfExtended(Vcf):
+class VcfVep(Vcf):
     """
     An extension class of the Vcf class.
     This class is capable of creating a dictionary of transcripts for the given variant.
@@ -313,13 +341,6 @@ class VcfExtended(Vcf):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.idx_gene = self.header.get_tag_field_idx(CSQ_tag, GENE_field)
-        self.idx_variant_cons = self.header.get_tag_field_idx(
-            CSQ_tag, CONSEQUENCE_field
-        )
-        self.idx_HGVSc = self.header.get_tag_field_idx(CSQ_tag, HGVSc_field)
-        self.idx_HGVSp = self.header.get_tag_field_idx(CSQ_tag, HGVSp_field)
-        self.idx_CANONICAL = self.header.get_tag_field_idx(CSQ_tag, CANONICAL_field)
 
     def create_transcripts_dict(self, vnt_obj):
         """
@@ -333,37 +354,37 @@ class VcfExtended(Vcf):
         :return: transcripts
         :rtype: dict
         """
-        unknown = 0 #we create a random ID for a missing transcipt ID
         transcripts = vnt_obj.get_tag_value(CSQ_tag).split(",")
         transcripts_dict = {}
         for transcript in transcripts:
             transcript_fields = transcript.split("|")
-            ens_gene = transcript_fields[self.idx_HGVSc].split(":")[0]
 
-            if ens_gene == "":
-                ens_gene = f"unknown_{unknown}"
-                unknown += 1
-
-            transcripts_dict[ens_gene] = {}
-
-            gene = transcript_fields[self.idx_gene]
-
-            ens_st = transcript_fields[self.idx_HGVSp].split(":")[0]
-            consequence = transcript_fields[self.idx_variant_cons]
-            HGVSc = transcript_fields[self.idx_HGVSc]
-            HGVSp = transcript_fields[self.idx_HGVSp]
-            CANONICAL = transcript_fields[self.idx_CANONICAL]
-            transcripts_dict[ens_gene] = {
-                "gene": gene,
-                "ens_st": ens_st,
-                "consequence": consequence,
-                "category": CATEGORY_SNV_INDEL,
-                "HGVSc": HGVSc,
-                "HGVSp": HGVSp,
-                "CANONICAL": CANONICAL,
-            }
-
+            record = dict(zip(self.header.CSQ_fields, transcript_fields))
+            if record[FEATURE_TYPE_field] == TRANSCRIPT:
+                transcript_id = record[FEATURE_field]
+                transcripts_dict[transcript_id] = record
         return transcripts_dict
+
+    class Header(Vcf.Header):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.CSQ_fields = self.get_CSQ_fields()
+
+        def get_CSQ_fields(self):
+            for line in self.definitions.split("\n")[:-1]:
+                if line.startswith("##INFO=<ID=CSQ,"):
+                    try:
+                        format = line.split("Format:")[1]
+                        # Cleaning format
+                        format = (
+                            format.replace("'", "").replace('"', "").replace(">", "")
+                        )
+
+                        return format.split("|")
+                    except Exception:
+                        raise ValueError(
+                            "Wrong format of the CSQ defitinion in the header."
+                        )
 
 
 def build_from_tsv(input_tsv):
@@ -400,61 +421,51 @@ def build_from_vcf(input_vcf):
     :rtype: list
     """
     records = []
-    vcf_obj = VcfExtended(input_vcf)
-
+    vcf_obj = VcfVep(input_vcf)
+    print(vcf_obj.header.check_tag_definition("CSQ"))
     for vnt_obj in vcf_obj.parse_variants():
         transcripts_dict = vcf_obj.create_transcripts_dict(vnt_obj)
-        try:
-            gene_h, transcript_h, protein_t = vnt_obj.get_tag_value(
-                HOTSPOT_field
-            ).split("|")
 
-            if transcript_h != "null" and transcript_h in transcripts_dict.keys():
-                trans = transcripts_dict[transcript_h]
-                records.append(
-                    DriverSnvIndel(
-                        vnt_obj=vnt_obj,
-                        ens_gene=trans["HGVSc"].split(":")[0],
-                        ens_st=trans["HGVSp"].split(":")[0],
-                        transcript_consequence=trans["HGVSc"].split(":")[1],
-                        protein_mutation=trans["HGVSp"].split(":")[1],
-                        mutation_type=trans["consequence"],
-                        category=trans["category"],
-                        gene=trans["gene"],
+        hotspot_genes = []
+        try:
+            hotspot_genes = vnt_obj.get_tag_value(HOTSPOT_field).split("|")
+            for k, v in transcripts_dict.items():
+                if v[SYMBOL_field] in hotspot_genes and v[CANONICAL_field] == CANONICAL_TRUE:
+                    records.append(
+                        DriverSnvIndel(
+                            vnt_obj=vnt_obj,
+                            ens_gene=ens_gene,
+                            transcript_id=v[FEATURE_field],
+                            transcript_consequence=v[HGVSc_field].split(":")[1],
+                            protein_mutation=v[HGVSp_field].split(":")[1],
+                            mutation_type=v[CONSEQUENCE_field],
+                            gene=v[SYMBOL_field],
+                        ).to_dict()
                     )
-                ).to_dict()
-            else:
-                records.append(
-                    DriverSnvIndel(
-                        vnt_obj=vnt_obj,
-                        HGVSc=None,
-                        HGVSp=None,
-                        mutation_type=None,
-                        category=CATEGORY_SNV_INDEL,
-                        gene=gene_h,
-                    ).to_dict()
-                )
         except Exception:
             pass
+
         try:
-            driver = vnt_obj.get_tag_value(DRIVER_field)
+            drivers = vnt_obj.get_tag_value(DRIVER_field).split(",")
         except Exception:
             continue
 
-        gene_d, ens_gene_d, ens_st_d = driver.split("|")
-        trans = transcripts_dict[ens_gene_d]
-        records.append(
-            DriverSnvIndel(
-                vnt_obj=vnt_obj,
-                ens_gene=trans["HGVSc"].split(":")[0],
-                ens_st=trans["HGVSp"].split(":")[0],
-                transcript_consequence=trans["HGVSc"].split(":")[1],
-                protein_mutation=trans["HGVSp"].split(":")[1],
-                mutation_type=trans["consequence"],
-                category=trans["category"],
-                gene=trans["gene"],
-            ).to_dict()
-        )
+        for driver in drivers:
+            gene_d, transcript_gene_d, transcript_id_d = driver.split("|")
+            # if its in hotspot_genes, it's been already added
+            if gene_d not in hotspot_genes:
+                trans = transcripts_dict[transcript_id_d]
+                records.append(
+                    DriverSnvIndel(
+                        vnt_obj=vnt_obj,
+                        ens_gene=ens_gene,
+                        transcript_id=trans[FEATURE_field],
+                        transcript_consequence=trans[HGVSc_field].split(":")[1],
+                        protein_mutation=trans[HGVSp_field].split(":")[1],
+                        mutation_type=trans[CONSEQUENCE_field],
+                        gene=trans[SYMBOL_field],
+                    ).to_dict()
+                )
 
     return records
 
@@ -497,7 +508,7 @@ if __name__ == "__main__":
 
     driver_catalog = subparsers.add_parser(
         "driverCatalogVCF",
-        help="Create a catalog of drivers for SNVs and INDELs using the Hartwig Medical Foundation gene panel.",
+        help="Create a catalog of drivers for SNVs and INDELs using the gene panel used by Hartwig Medical Foundation.",
     )
 
     driver_catalog.add_argument(
