@@ -1,7 +1,7 @@
 #################################################################
 #   Libraries
 #################################################################
-import sys, os
+import os
 import pytest
 import filecmp
 from granite.lib import vcf_parser
@@ -52,7 +52,7 @@ def test_dumpJSON(tmp_path):
 
 def test_missing_CSQ():
     with pytest.raises(Exception, match='Missing CSQ definition in the header.'):
-        annot.VcfVep("test/files/missing_CSQ.vcf")
+        annot.VcfVep("test/files/missing_CSQ.vcf.gz")
 
 def test_wrong_TSV():
     with pytest.raises(Exception):
