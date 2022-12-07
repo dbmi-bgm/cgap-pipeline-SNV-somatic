@@ -371,6 +371,12 @@ class VcfVep(Vcf):
             self.CSQ_fields = self.get_CSQ_fields()
 
         def get_CSQ_fields(self):
+            """
+            Get the CSQ fields from VEP
+
+            :return: fields
+            :rtype: list
+            """
             for line in self.definitions.split("\n")[:-1]:
                 if line.startswith("##INFO=<ID=CSQ,"):
                     try:
@@ -385,6 +391,7 @@ class VcfVep(Vcf):
                         raise ValueError(
                             "Wrong format of the CSQ defitinion in the header."
                         )
+            raise Exception("Missing CSQ definition in the header.")
 
 
 def build_from_tsv(input_tsv):
@@ -458,7 +465,7 @@ def build_from_vcf(input_vcf):
                 records.append(
                     DriverSnvIndel(
                         vnt_obj=vnt_obj,
-                        ens_gene=ens_gene,
+                        ens_gene= trans[GENE_field],
                         transcript_id=trans[FEATURE_field],
                         transcript_consequence=trans[HGVSc_field].split(":")[1],
                         protein_mutation=trans[HGVSp_field].split(":")[1],

@@ -1,0 +1,191 @@
+[
+    {
+        "chrom": "chr2",
+        "pos": 47806320,
+        "ref": "G",
+        "alt": "A",
+        "transcript_consequence": "c.3763G>A",
+        "protein_mutation": "p.Asp1255Asn",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "0.238095",
+        "category": "mutational",
+        "gene": "MSH6"
+    },
+    {
+        "chrom": "chr6",
+        "pos": 157133136,
+        "ref": "G",
+        "alt": "C",
+        "transcript_consequence": "c.2480G>C",
+        "protein_mutation": "p.Gly827Ala",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "0.977273",
+        "category": "mutational",
+        "gene": "ARID1B"
+    },
+    {
+        "chrom": "chr8",
+        "pos": 132948806,
+        "ref": "C",
+        "alt": "G",
+        "transcript_consequence": "c.5264C>G",
+        "protein_mutation": "p.Pro1755Arg",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "1",
+        "category": "mutational",
+        "gene": "TG"
+    },
+    {
+        "chrom": "chr13",
+        "pos": 32339132,
+        "ref": "G",
+        "alt": "T",
+        "transcript_consequence": "c.4777G>T",
+        "protein_mutation": "p.Glu1593Ter",
+        "mutation_type": "stop_gained",
+        "allele_fraction": "0.447368",
+        "category": "mutational",
+        "gene": "BRCA2"
+    },
+    {
+        "chrom": "chr17",
+        "pos": 72123715,
+        "ref": "C",
+        "alt": "G",
+        "transcript_consequence": "c.858C>G",
+        "protein_mutation": "p.Ile286Met",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "0.0786517",
+        "category": "mutational",
+        "gene": "SOX9"
+    },
+    {
+        "chrom": "chrX",
+        "pos": 41344255,
+        "ref": "G",
+        "alt": "C",
+        "transcript_consequence": "c.881G>C",
+        "protein_mutation": "p.Arg294Thr",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "0.875",
+        "category": "mutational",
+        "gene": "DDX3X"
+    },
+    {
+        "chrom": "chrX",
+        "pos": 77681733,
+        "ref": "T",
+        "alt": "C",
+        "transcript_consequence": "c.3523A>G",
+        "protein_mutation": "p.Lys1175Glu",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "0.944444",
+        "category": "mutational",
+        "gene": "ATRX"
+    },
+    {
+        "chrom": "6",
+        "start": "41934933",
+        "end": "42050357",
+        "category": "amplification",
+        "gene": "CCND3"
+    },
+    {
+        "chrom": "9",
+        "start": "21967753",
+        "end": "21995301",
+        "category": "deletion",
+        "gene": "CDKN2A"
+    },
+    {
+        "chrom": "X",
+        "start": "1187549",
+        "end": "1212723",
+        "category": "amplification",
+        "gene": "CRLF2"
+    },
+    {
+        "chrom": "21",
+        "start": "38805183",
+        "end": "38824955",
+        "category": "deletion",
+        "gene": "ETS2"
+    },
+    {
+        "chrom": "6",
+        "start": "26055787",
+        "end": "26056428",
+        "category": "amplification",
+        "gene": "H1-2"
+    },
+    {
+        "chrom": "6",
+        "start": "26031594",
+        "end": "26032099",
+        "category": "amplification",
+        "gene": "H3C2"
+    },
+    {
+        "chrom": "7",
+        "start": "116672196",
+        "end": "116798386",
+        "category": "amplification",
+        "gene": "MET"
+    },
+    {
+        "chrom": "8",
+        "start": "127735434",
+        "end": "127742951",
+        "category": "amplification",
+        "gene": "MYC"
+    },
+    {
+        "chrom": "6",
+        "start": "37170152",
+        "end": "37175428",
+        "category": "amplification",
+        "gene": "PIM1"
+    },
+    {
+        "chrom": "10",
+        "start": "43077064",
+        "end": "43130351",
+        "category": "amplification",
+        "gene": "RET"
+    },
+    {
+        "chrom": "6",
+        "start": "21593751",
+        "end": "21598619",
+        "category": "amplification",
+        "gene": "SOX4"
+    },
+    {
+        "chrom": "8",
+        "start": "132866958",
+        "end": "133134903",
+        "category": "amplification",
+        "gene": "TG"
+    },
+    {
+        "chrom": "6",
+        "start": "18128311",
+        "end": "18155077",
+        "category": "amplification",
+        "gene": "TPMT"
+    },
+    {
+        "chrom": "6",
+        "start": "43770184",
+        "end": "43786487",
+        "category": "amplification",
+        "gene": "VEGFA"
+    },
+    {
+        "chrom": "3",
+        "start": "114314501",
+        "end": "115147271",
+        "category": "deletion",
+        "gene": "ZBTB20"
+    }
+]

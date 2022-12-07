@@ -1,0 +1,96 @@
+##fileformat=VCFv4.2
+##ALT=<ID=BND,Description="Breakend">
+##ALT=<ID=INS,Description="Insertion">
+##FILTER=<ID=PASS,Description="Accept as a confident somatic mutation">
+##FILTER=<ID=alt_allele_in_normal,Description="Evidence seen in the normal sample">
+##FILTER=<ID=clustered_events,Description="Clustered events observed in the tumor">
+##FILTER=<ID=germline_risk,Description="Evidence indicates this site is germline, not somatic">
+##FILTER=<ID=homologous_mapping_event,Description="More than three events were observed in the tumor">
+##FILTER=<ID=multi_event_alt_allele_in_normal,Description="Multiple events observed in tumor and normal">
+##FILTER=<ID=panel_of_normals,Description="Seen in at least 2 samples in the panel of normals">
+##FILTER=<ID=str_contraction,Description="Site filtered due to contraction of short tandem repeat region">
+##FILTER=<ID=t_lod_fstar,Description="Tumor does not meet likelihood threshold">
+##FILTER=<ID=triallelic_site,Description="Site filtered because more than two alt alleles pass tumor LOD">
+##FILTER=<ID=low_t_alt_frac,Description="Site filtered due to low alt allele fraction">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=AF,Number=1,Type=Float,Description="Allele fraction of the event in the tumor">
+##FORMAT=<ID=AFDP,Number=1,Type=Integer,Description="Read depth to calculate AF">
+##FORMAT=<ID=AFDPLOWMQ,Number=1,Type=Integer,Description="Read depth to calculate AF with low mapq reads">
+##FORMAT=<ID=AFLOWMQ,Number=1,Type=Float,Description="Allele fraction of the event in the tumor with low mapq reads">
+##FORMAT=<ID=ALTHC,Number=1,Type=Integer,Description="Depth of high confidence alt">
+##FORMAT=<ID=ALTHCLOWMQ,Number=1,Type=Integer,Description="Depth of high confidence alt with low mapq reads">
+##FORMAT=<ID=ALT_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the alternate allele">
+##FORMAT=<ID=ALT_F2R1,Number=1,Type=Integer,Description="Count of reads in F2R1 pair orientation supporting the alternate allele">
+##FORMAT=<ID=BaseQRankSumPS,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt Vs. Ref base qualities per sample">
+##FORMAT=<ID=ClippingRankSumPS,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref number of hard clipped bases per sample">
+##FORMAT=<ID=DPHC,Number=1,Type=Integer,Description="Read depth of high confidence alt and ref">
+##FORMAT=<ID=DPHCLOWMQ,Number=1,Type=Integer,Description="Read depth of high confidence alt and ref with low mapq reads">
+##FORMAT=<ID=FOXOG,Number=1,Type=Float,Description="Fraction of alt reads indicating OxoG error">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=MQRankSumPS,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref read mapping qualities per sample">
+##FORMAT=<ID=NBQPS,Number=1,Type=Float,Description="Mean Neighboring Base Quality, includes 5bp on both sides per sample">
+##FORMAT=<ID=PGT,Number=1,Type=String,Description="Physical phasing haplotype information, describing how the alternate alleles are phased in relation to one another">
+##FORMAT=<ID=PID,Number=1,Type=String,Description="Physical phasing ID information, where each unique ID within a given sample (but not across samples) connects records within a phasing group">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="The phred-scaled genotype likelihoods rounded to the closest integer">
+##FORMAT=<ID=QSS,Number=R,Type=Integer,Description="Sum of base quality scores for each allele">
+##FORMAT=<ID=REF_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the reference allele">
+##FORMAT=<ID=REF_F2R1,Number=1,Type=Integer,Description="Count of reads in F2R1 pair orientation supporting the reference allele">
+##FORMAT=<ID=ReadPosEndDistPS,Number=1,Type=Float,Description="Mean distance from either end of read per sample">
+##FORMAT=<ID=ReadPosRankSumPS,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias per sample">
+##INFO=<ID=CIEND,Number=2,Type=Integer,Description="Confidence interval around END for imprecise variants">
+##INFO=<ID=CIPOS,Number=2,Type=Integer,Description="Confidence interval around POS for imprecise variants">
+##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
+##INFO=<ID=DPR,Number=1,Type=Float,Description="Avg Depth in Region (+/- 1bp)">
+##INFO=<ID=ECNT,Number=1,Type=Integer,Description="Number of events in this haplotype">
+##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the variant described in this record">
+##INFO=<ID=FS,Number=1,Type=Float,Description="Phred-scaled p-value using Fisher's exact test to detect strand bias">
+##INFO=<ID=HCNT,Number=1,Type=Integer,Description="Number of haplotypes that support this variant">
+##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description="Imprecise structural variation">
+##INFO=<ID=MATEID,Number=1,Type=String,Description="Breakend mate">
+##INFO=<ID=MAX_ED,Number=1,Type=Integer,Description="Maximum distance between events in this active region">
+##INFO=<ID=MIN_ED,Number=1,Type=Integer,Description="Minimum distance between events in this active region">
+##INFO=<ID=NLOD,Number=1,Type=Float,Description="Normal LOD score">
+##INFO=<ID=NLODF,Number=1,Type=Float,Description="Normal LOD score at tumor frac">
+##INFO=<ID=PON,Number=1,Type=Integer,Description="Count from Panel of Normals">
+##INFO=<ID=PV,Number=1,Type=Float,Description="Fisher's exact test p-value">
+##INFO=<ID=PV2,Number=1,Type=Float,Description="Fisher's exact test p-value for high-confidence reads">
+##INFO=<ID=RPA,Number=R,Type=Integer,Description="Number of times tandem repeat unit is repeated, for each allele (including reference)">
+##INFO=<ID=RU,Number=1,Type=String,Description="Tandem repeat unit (bases)">
+##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic mutation in primary">
+##INFO=<ID=SOR,Number=1,Type=Float,Description="Symmetric Odds Ratio of 2x2 contingency table to detect strand bias">
+##INFO=<ID=STR,Number=0,Type=Flag,Description="Variant is a short tandem repeat">
+##INFO=<ID=SVLEN,Number=.,Type=Integer,Description="Difference in length between REF and ALT alleles">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
+##INFO=<ID=TLOD,Number=1,Type=Float,Description="Tumor LOD score">
+##INFO=<ID=VAF,Number=1,Type=Float,Description="Variant Allele Frequency">
+##SentieonCommandLine.TNscope=<ID=TNscope,Version="sentieon-genomics-202112.01",Date="2022-03-14T19:59:56Z",CommandLine="/usr/local/bin/sentieon/libexec/driver -t 36 -r /var/lib/cwl/stg6edf816d-ae92-4cde-b3a1-3f7870b9ce53/GAPFIXRDPDK5.fa --replace_rg A00169_41_H2WM5DMXX_2=ID:T_1%09SM:TUMOR%09PL:PLATFORM -i /var/lib/cwl/stgff5eac7a-6657-45e0-861d-e4f876465fe4/GAPFI2USVS21.bam --replace_rg A00169_41_H2WM5DMXX_2=ID:N_1%09SM:NORMAL%09PL:PLATFORM -i /var/lib/cwl/stg60f982ca-7e76-41d6-88c5-a303ac5f243b/GAPFI14IJOX2.bam --algo TNscope --tumor_sample TUMOR --normal_sample NORMAL --dbsnp /var/lib/cwl/stge1922a95-4d03-482a-b3a7-a580d90dba9a/GAPFI4LJRN98.vcf.gz --pon /var/lib/cwl/stgf9c0d053-8c55-44b2-80f1-2b26a229946e/GAPFIV1QKYU9.vcf.gz output.vcf">
+##contig=<ID=chr1,length=248956422,assembly=unknown>
+##contig=<ID=chr2,length=242193529,assembly=unknown>
+##contig=<ID=chr3,length=198295559,assembly=unknown>
+##contig=<ID=chr4,length=190214555,assembly=unknown>
+##contig=<ID=chr5,length=181538259,assembly=unknown>
+##contig=<ID=chr6,length=170805979,assembly=unknown>
+##contig=<ID=chr7,length=159345973,assembly=unknown>
+##contig=<ID=chr8,length=145138636,assembly=unknown>
+##contig=<ID=chr9,length=138394717,assembly=unknown>
+##contig=<ID=chr10,length=133797422,assembly=unknown>
+##contig=<ID=chr11,length=135086622,assembly=unknown>
+##contig=<ID=chr12,length=133275309,assembly=unknown>
+##contig=<ID=chr13,length=114364328,assembly=unknown>
+##contig=<ID=chr14,length=107043718,assembly=unknown>
+##contig=<ID=chr15,length=101991189,assembly=unknown>
+##contig=<ID=chr16,length=90338345,assembly=unknown>
+##contig=<ID=chr17,length=83257441,assembly=unknown>
+##contig=<ID=chr18,length=80373285,assembly=unknown>
+##contig=<ID=chr19,length=58617616,assembly=unknown>
+##contig=<ID=chr20,length=64444167,assembly=unknown>
+##contig=<ID=chr21,length=46709983,assembly=unknown>
+##contig=<ID=chr22,length=50818468,assembly=unknown>
+##contig=<ID=chrX,length=156040895,assembly=unknown>
+##contig=<ID=chrY,length=57227415,assembly=unknown>
+##contig=<ID=chrM,length=16569,assembly=unknown>
+##reference=file:///var/lib/cwl/stg6edf816d-ae92-4cde-b3a1-3f7870b9ce53/GAPFIXRDPDK5.fa
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	TUMOR	NORMAL
+chrX	6219008	bnd_1028	A	ATCTTCATA]chrX:6220343]	59	PASS	SVTYPE=BND;MATEID=bnd_1029;SOMATIC	GT:AD	./.:7,16	./.:.
+chrX	6220343	bnd_1029	T	TTATGAAGA]chrX:6219008]	59	PASS	SVTYPE=BND;MATEID=bnd_1028;SOMATIC	GT:AD	./.:0,11	./.:.
