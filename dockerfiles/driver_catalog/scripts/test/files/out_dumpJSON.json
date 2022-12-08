@@ -25,6 +25,18 @@
     },
     {
         "chrom": "chr8",
+        "pos": 38428420,
+        "ref": "G",
+        "alt": "A",
+        "transcript_consequence": "c.473C>T",
+        "protein_mutation": "p.Ser158Leu",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "1",
+        "category": "mutational",
+        "gene": "FGFR1"
+    },
+    {
+        "chrom": "chr8",
         "pos": 132948806,
         "ref": "C",
         "alt": "G",
@@ -46,6 +58,18 @@
         "allele_fraction": "0.447368",
         "category": "mutational",
         "gene": "BRCA2"
+    },
+    {
+        "chrom": "chr17",
+        "pos": 7675088,
+        "ref": "C",
+        "alt": "T",
+        "transcript_consequence": "c.524G>A",
+        "protein_mutation": "p.Arg175His",
+        "mutation_type": "missense_variant",
+        "allele_fraction": "0.977273",
+        "category": "mutational",
+        "gene": "TP53"
     },
     {
         "chrom": "chr17",

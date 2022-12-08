@@ -429,7 +429,6 @@ def build_from_vcf(input_vcf):
     """
     records = []
     vcf_obj = VcfVep(input_vcf)
-    print(vcf_obj.header.check_tag_definition("CSQ"))
     for vnt_obj in vcf_obj.parse_variants():
         transcripts_dict = vcf_obj.create_transcripts_dict(vnt_obj)
 
@@ -437,11 +436,14 @@ def build_from_vcf(input_vcf):
         try:
             hotspot_genes = vnt_obj.get_tag_value(HOTSPOT_field).split("|")
             for k, v in transcripts_dict.items():
-                if v[SYMBOL_field] in hotspot_genes and v[CANONICAL_field] == CANONICAL_TRUE:
+                if (
+                    v[SYMBOL_field] in hotspot_genes
+                    and v[CANONICAL_field] == CANONICAL_TRUE
+                ):
                     records.append(
                         DriverSnvIndel(
                             vnt_obj=vnt_obj,
-                            ens_gene=ens_gene,
+                            ens_gene=v[GENE_field],
                             transcript_id=v[FEATURE_field],
                             transcript_consequence=v[HGVSc_field].split(":")[1],
                             protein_mutation=v[HGVSp_field].split(":")[1],
@@ -449,11 +451,14 @@ def build_from_vcf(input_vcf):
                             gene=v[SYMBOL_field],
                         ).to_dict()
                     )
+        # TODO: we should change it into custom errors
         except Exception:
             pass
 
         try:
             drivers = vnt_obj.get_tag_value(DRIVER_field).split(",")
+
+        # TODO: we should change it into custom errors
         except Exception:
             continue
 
@@ -465,7 +470,7 @@ def build_from_vcf(input_vcf):
                 records.append(
                     DriverSnvIndel(
                         vnt_obj=vnt_obj,
-                        ens_gene= trans[GENE_field],
+                        ens_gene=trans[GENE_field],
                         transcript_id=trans[FEATURE_field],
                         transcript_consequence=trans[HGVSc_field].split(":")[1],
                         protein_mutation=trans[HGVSp_field].split(":")[1],
