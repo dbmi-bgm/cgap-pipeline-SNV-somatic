@@ -68,6 +68,6 @@ def test_splitter_sv(tmp_path):
 
 
     i = os.popen(f'bgzip -c -d {out_all_sv}.gz')
-    k = os.popen(f'bgzip -c -d test/files/sv_test_full.vcf.gz')
-    assert [row for row in i.read()] == [row for row in k.read()]
+    j = os.popen(f'bgzip -c -d test/files/sv_test_full.vcf.gz')
+    assert [row for row in i.read()] == [row for row in j.read()]
 
