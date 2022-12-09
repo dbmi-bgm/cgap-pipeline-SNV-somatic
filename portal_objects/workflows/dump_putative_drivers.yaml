@@ -1,15 +1,12 @@
 ## Workflow information #####################################
 #     General information for the workflow
 #############################################################
-name: putative_drivers
-description: Annotate putative driver mutations in a VCF file 
+name: dump_putative_drivers
+description: Create a single JSON file compatible with GoScan to store putative driver mutations.
 
 runner:
   language: cwl
-  main: driver_annot.cwl
-
-software:
-  - granite@0.2.0
+  main: dump_drivers.cwl
 
 
 ## Input information ########################################
@@ -17,24 +14,15 @@ software:
 #############################################################
 input:
 
-  input_vcf:
+  vcf:
     argument_type: file.vcf_gz
-  gene_panel:
+  cnv:
     argument_type: file.tsv_gz
-  somatic_hotspot:
-    argument_type: file.vcf_gz
-
-output:
-  putative_drivers_vcf:
-    argument_type: file.vcf_gz
-    secondary_files:
-      - vcf_gz_tbi
-
 
 
 ## Output information #######################################
 #     Output files and quality controls
 #############################################################
 output:
-  putative_drivers_vcf:
-    argument_type: file.vcf_gz
+  putative_drivers_json:
+    argument_type: file.json

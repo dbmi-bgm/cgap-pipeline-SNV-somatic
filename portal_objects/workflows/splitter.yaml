@@ -2,7 +2,7 @@
 #     General information for the workflow
 #############################################################
 name: splitter
-description: Split SNVs and INDELs from SVs
+description: Separete SNVs and INDELs from SVs
 
 runner:
   language: cwl
