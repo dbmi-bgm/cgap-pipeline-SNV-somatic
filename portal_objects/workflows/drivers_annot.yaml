@@ -1,7 +1,7 @@
 ## Workflow information #####################################
 #     General information for the workflow
 #############################################################
-name: drivers_annot
+name: putative_drivers
 description: Annotate putative driver mutations in a VCF file 
 
 runner:
