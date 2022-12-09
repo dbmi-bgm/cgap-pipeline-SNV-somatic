@@ -23,7 +23,7 @@ workflows:
         input_dimension: 1
     
     output:
-      driver_json:
+      putative_drivers_json:
         description: GosCan compatible file containing driver mutations for SNVs, INDELs and CNVs
         file_type: JSON
     

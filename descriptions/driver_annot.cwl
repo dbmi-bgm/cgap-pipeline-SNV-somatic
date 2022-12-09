@@ -41,7 +41,7 @@ inputs:
 
 outputs:
 
-  - id: driver_annot_vcf
+  - id: putative_drivers_vcf
     type: File
     outputBinding:
       glob: $(inputs.output).gz

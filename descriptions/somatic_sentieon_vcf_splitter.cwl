@@ -36,7 +36,7 @@ outputs:
       glob: $(inputs.prefix + "_ind_snv.vcf.gz")
     secondaryFiles:
       - .tbi
-  - id: sv_bnd
+  - id: sv_bnd_pass
     type: File
     outputBinding: 
       glob: $(inputs.prefix + "_bnd.vcf.gz")

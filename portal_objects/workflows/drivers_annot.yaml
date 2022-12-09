@@ -25,7 +25,7 @@ input:
     argument_type: file.vcf_gz
 
 output:
-  driver_annot_vcf:
+  putative_drivers_vcf:
     argument_type: file.vcf_gz
     secondary_files:
       - vcf_gz_tbi
@@ -36,5 +36,5 @@ output:
 #     Output files and quality controls
 #############################################################
 output:
-  driver_annot_vcf:
+  putative_drivers_vcf:
     argument_type: file.vcf_gz

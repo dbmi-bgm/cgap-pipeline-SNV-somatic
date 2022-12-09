@@ -30,7 +30,7 @@ output:
       - vcf_gz_tbi
 
 
-  sv_bnd:
+  sv_bnd_pass:
     argument_type: file.vcf_gz
     secondary_files:
       - vcf_gz_tbi

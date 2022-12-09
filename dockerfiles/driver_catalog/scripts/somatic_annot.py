@@ -89,6 +89,7 @@ class DriverSnvIndel(Driver):
         self.mutation_type = mutation_type
         self.hotspot = hotspot
 
+        # tumor sample should be the first in the genotypes
         tumor_sample = vnt_obj.IDs_genotypes[0]
         self.allele_fraction = vnt_obj.get_genotype_value(tumor_sample, "AF")
 
@@ -141,7 +142,7 @@ class DriverCnv(Driver):
         """
 
         A function used to serialize the object into a dictionary.
-        It is used to dump the varian into a JSON format.
+        It is used to dump the varian into the JSON format.
 
         """
         return vars(self)
@@ -292,7 +293,7 @@ class HartwigDecisionTree:
                     tag_type="INFO",
                 )
                 vcf_obj.header.add_tag_definition(
-                    f'##INFO=<ID={HOTSPOT_field},Number=1,Type=String,Description="Somatic hotspot location. Format: Gene|Ensemble Transcript ID|Protein change ">',
+                    f'##INFO=<ID={HOTSPOT_field},Number=1,Type=String,Description="Somatic hotspot location, contains a list of affected genes">',
                     tag_type="INFO",
                 )
                 vcf_obj.write_header(output)
@@ -313,13 +314,12 @@ class HartwigDecisionTree:
                         hotspot_genes = []
                         transcripts_dict = vcf_obj.create_transcripts_dict(vnt_obj)
 
-                        for _, v in transcripts_dict.items():
-                            if (
-                                v[SYMBOL_field] in self.hotspot
-                                and v[SYMBOL_field] not in hotspot_genes
-                            ):
-                                hotspot_genes += [v[SYMBOL_field]]
+                        for _, values in transcripts_dict.items():
+                            if values[SYMBOL_field] in self.hotspot:
+                                hotspot_genes += [values[SYMBOL_field]]
 
+                        #only unique values
+                        hotspot_genes = set(hotspot_genes)
                         if len(hotspot_genes) > 0:
                             vnt_obj.add_tag_info(
                                 f"{HOTSPOT_field}={'|'.join(hotspot_genes)}"
@@ -354,12 +354,12 @@ class VcfVep(Vcf):
         :return: transcripts
         :rtype: dict
         """
-        transcripts = vnt_obj.get_tag_value(CSQ_tag).split(",")
+        fields = vnt_obj.get_tag_value(CSQ_tag).split(",")
         transcripts_dict = {}
-        for transcript in transcripts:
-            transcript_fields = transcript.split("|")
+        for field in fields:
+            values = field.split("|")
 
-            record = dict(zip(self.header.CSQ_fields, transcript_fields))
+            record = dict(zip(self.header.CSQ_fields, values))
             if record[FEATURE_TYPE_field] == TRANSCRIPT:
                 transcript_id = record[FEATURE_field]
                 transcripts_dict[transcript_id] = record
@@ -435,20 +435,20 @@ def build_from_vcf(input_vcf):
         hotspot_genes = []
         try:
             hotspot_genes = vnt_obj.get_tag_value(HOTSPOT_field).split("|")
-            for k, v in transcripts_dict.items():
+            for _, values in transcripts_dict.items():
                 if (
-                    v[SYMBOL_field] in hotspot_genes
-                    and v[CANONICAL_field] == CANONICAL_TRUE
+                    values[SYMBOL_field] in hotspot_genes
+                    and values[CANONICAL_field] == CANONICAL_TRUE
                 ):
                     records.append(
                         DriverSnvIndel(
                             vnt_obj=vnt_obj,
-                            ens_gene=v[GENE_field],
-                            transcript_id=v[FEATURE_field],
-                            transcript_consequence=v[HGVSc_field].split(":")[1],
-                            protein_mutation=v[HGVSp_field].split(":")[1],
-                            mutation_type=v[CONSEQUENCE_field],
-                            gene=v[SYMBOL_field],
+                            ens_gene=values[GENE_field],
+                            transcript_id=values[FEATURE_field],
+                            transcript_consequence=values[HGVSc_field].split(":")[1],
+                            protein_mutation=values[HGVSp_field].split(":")[1],
+                            mutation_type=values[CONSEQUENCE_field],
+                            gene=values[SYMBOL_field],
                         ).to_dict()
                     )
         # TODO: we should change it into custom errors
@@ -484,7 +484,7 @@ def build_from_vcf(input_vcf):
 
 def find_drivers(args):
     """
-    Run Hartwig Decition Tree to find putative drivers
+    Run Hartwig Decision Tree to find putative drivers
     and save to a new VCF file
 
     :param args: arguments from the CLI
