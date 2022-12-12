@@ -33,7 +33,7 @@ output:
 
 
 ## Output information #######################################
-#     Output files and quality controls
+#     Output files
 #############################################################
 output:
   putative_drivers_vcf:

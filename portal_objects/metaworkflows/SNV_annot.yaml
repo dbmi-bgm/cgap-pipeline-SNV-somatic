@@ -138,7 +138,6 @@ workflows:
         description: VCF containing SVs of the input VCF
         file_type: raw VCF
 
-
     ## EC2 Configuration to use ########
     ####################################
     config:
@@ -156,7 +155,9 @@ workflows:
   #  vep
   ############################################
   vep:
-    
+
+    ## Workflow arguments ##############
+    ####################################
     input:
 
       input_vcf:
@@ -167,46 +168,65 @@ workflows:
 
       reference:
         argument_type: file.fa
+
       regions:
         argument_type: file.txt
+
       vep:
         argument_type: file.vep_tar
+
       clinvar:
         argument_type: file.vcf_gz
+
       dbnsfp:
         argument_type: file.dbnsfp_gz
+
       maxent:
         argument_type: file.tar_gz
+
       spliceai_snv:
         argument_type: file.vcf_gz
+
       spliceai_indel:
         argument_type: file.vcf_gz
+
       gnomad:
         argument_type: file.vcf_gz
+
       gnomad2:
-        argument_type: file.vcf_gz  
-      
+        argument_type: file.vcf_gz
+
       CADD_snv:
         argument_type: file.tsv_gz
+
       CADD_indel:
         argument_type: file.tsv_gz
+
       phylop30bw:
         argument_type: file.BigWig
+
       phylop100bw:
         argument_type: file.BigWig
+
       phastc100bw:
         argument_type: file.BigWig
+
       version: 
         argument_type: parameter.string
+
       assembly:
         argument_type: parameter.string
-      
+
+    ## Output ##########################
+    ####################################
     output:
 
       output:
         description: output from VEP in the VCF format
         file_type: annotated VCF
-    
+
+    ## EC2 Configuration to use ########
+    ####################################
     config:
         instance_type:
           - m6a.24xlarge
@@ -217,6 +237,10 @@ workflows:
         run_name: run_vep
         behavior_on_capacity_limit: wait_and_retry
   
+
+  ## Workflow definition #####################
+  #  putative_drivers_snv
+  ############################################
   putative_drivers_snv:
     input:
       input_vcf:
@@ -224,18 +248,26 @@ workflows:
         dimensionality: 1
         source: vep
         source_argument_name: annotated_vcf
+
       gene_panel:
         argument_type: file.tsv_gz
+
       somatic_hotspot:
         argument_type: file.vcf_gz
-    
+
+    ## Output ##########################
+    ####################################
     output:
       putative_drivers_vcf:
         description: annotated VCF containing putative drivers
         file_type: annotated vCF
-    
+
+    ## EC2 Configuration to use ########
+    ####################################
     config:
-        instance_type: [t3.large, t3.xlarge] 
+        instance_type:
+        - t3.large
+        - t3.xlarge
         ebs_size: 1.6x
         EBS_optimized: True
         spot_instance: False
