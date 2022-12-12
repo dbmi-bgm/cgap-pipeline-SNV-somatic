@@ -11,7 +11,6 @@ runner:
 software:
   - granite@0.2.0
 
-
 ## Input information ########################################
 #     Input files and parameters
 #############################################################
@@ -19,22 +18,19 @@ input:
 
   input_vcf:
     argument_type: file.vcf_gz
+
   gene_panel:
     argument_type: file.tsv_gz
+
   somatic_hotspot:
     argument_type: file.vcf_gz
-
-output:
-  putative_drivers_vcf:
-    argument_type: file.vcf_gz
-    secondary_files:
-      - vcf_gz_tbi
-
-
 
 ## Output information #######################################
 #     Output files
 #############################################################
 output:
+
   putative_drivers_vcf:
     argument_type: file.vcf_gz
+    secondary_files:
+      - vcf_gz_tbi

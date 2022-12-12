@@ -1,3 +1,6 @@
+## Workflow information #####################################
+#     General information for the workflow
+#############################################################
 name: vep
 description: Run VEP to annotate input VCF file.
 
@@ -6,49 +9,75 @@ runner:
   main: vep-annot-snv.cwl
 
 software: 
-  - vep@101
+  - VEP@101
 
-input: 
+## Input information ########################################
+#     Input files and parameters
+#############################################################
+input:
+
   input_vcf:
     argument_type: file.vcf_gz
+
   reference:
     argument_type: file.fa
+
   regions:
     argument_type: file.txt
+
   vep:
     argument_type: file.vep_tar
+
   clinvar:
     argument_type: file.vcf_gz
+
   dbnsfp:
     argument_type: file.dbnsfp_gz
+
   maxent:
     argument_type: file.tar_gz
+
   spliceai_snv:
     argument_type: file.vcf_gz
+
   spliceai_indel:
     argument_type: file.vcf_gz
+
   gnomad:
     argument_type: file.vcf_gz
+
   gnomad2:
     argument_type: file.vcf_gz
+
   CADD_snv:
     argument_type: file.tsv_gz
+
   CADD_indel:
     argument_type: file.tsv_gz
+
   phylop30bw:
     argument_type: file.bigWig
+
   phylop100bw:
     argument_type: file.bigWig
+
   phastc100bw:
     argument_type: file.bigWig
+
   nthreads:
     argument_type: parameter.integer
+
   version: 
     argument_type: parameter.string
+
   assembly:
     argument_type: parameter.string
 
+## Output information #######################################
+#     Output files
+#############################################################
 output:
+
   annotated_vcf:
     argument_type: file.vcf_gz
     secondary_file:
