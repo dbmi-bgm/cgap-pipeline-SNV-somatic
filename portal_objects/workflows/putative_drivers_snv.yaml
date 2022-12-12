@@ -2,7 +2,7 @@
 #     General information for the workflow
 #############################################################
 name: putative_drivers_snv
-description: Annotate putative driver mutations in a VCF file 
+description: Identify putative cancer drivers from SNV and INDEL calls.
 
 runner:
   language: cwl

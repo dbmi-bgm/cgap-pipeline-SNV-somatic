@@ -1,10 +1,10 @@
 name: vep
-description:  Run VEP to annotate input vcf file.
+description: Run VEP to annotate input VCF file.
+
 runner:
   language: cwl
   main: vep-annot-snv.cwl
 
-title: Run VEP to annotate input vcf file
 software: 
   - vep@101
 

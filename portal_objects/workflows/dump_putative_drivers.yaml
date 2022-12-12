@@ -2,7 +2,8 @@
 #     General information for the workflow
 #############################################################
 name: dump_putative_drivers
-description: Create a single JSON file compatible with GoScan to store putative driver mutations.
+description: Store putative cancer driver SNVs, INDELs and CNVs. |
+            Produce a GoScan compatible JSON file.
 
 runner:
   language: cwl
