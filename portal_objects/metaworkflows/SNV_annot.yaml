@@ -260,7 +260,7 @@ workflows:
     output:
       putative_drivers_vcf:
         description: annotated VCF containing putative drivers
-        file_type: annotated vCF
+        file_type: annotated VCF
 
     ## EC2 Configuration to use ########
     ####################################
