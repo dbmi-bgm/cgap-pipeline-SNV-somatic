@@ -293,7 +293,7 @@ class HartwigDecisionTree:
                     tag_type="INFO",
                 )
                 vcf_obj.header.add_tag_definition(
-                    f'##INFO=<ID={HOTSPOT_field},Number=1,Type=String,Description="Somatic hotspot location, contains a list of affected genes">',
+                    f'##INFO=<ID={HOTSPOT_field},Number=1,Type=String,Description="Somatic hotspot location, contains a list of potentially affected genes">',
                     tag_type="INFO",
                 )
                 vcf_obj.write_header(output)
