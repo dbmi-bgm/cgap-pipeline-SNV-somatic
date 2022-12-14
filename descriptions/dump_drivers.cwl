@@ -41,5 +41,6 @@ outputs:
       glob: $(inputs.output)
     secondaryFiles:
       - .tbi
+
 doc: |
   JSON including reported putative drivers
