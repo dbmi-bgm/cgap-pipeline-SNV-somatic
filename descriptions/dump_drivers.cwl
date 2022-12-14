@@ -43,4 +43,4 @@ outputs:
       - .tbi
 
 doc: |
-  JSON including reported putative drivers
+  run dumpJSON to create a JSON file with the reported putative driver genes
