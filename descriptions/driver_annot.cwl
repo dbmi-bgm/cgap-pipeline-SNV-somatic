@@ -49,4 +49,4 @@ outputs:
       - .tbi
 
 doc: |
-  vcf containing reported putative drivers
+  run driverCatalogVCF to annotate putative driver genes in input VCF file
