@@ -209,7 +209,7 @@ workflows:
         argument_type: file.BigWig
 
       phastc100bw:
-        argument_type: file.BigWig
+        argument_type: file.bigWig
 
       version: 
         argument_type: parameter.string
