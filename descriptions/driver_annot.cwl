@@ -47,5 +47,6 @@ outputs:
       glob: $(inputs.output).gz
     secondaryFiles:
       - .tbi
+
 doc: |
   vcf containing reported putative drivers
