@@ -206,7 +206,7 @@ workflows:
         argument_type: file.bigWig
 
       phylop100bw:
-        argument_type: file.BigWig
+        argument_type: file.bigWig
 
       phastc100bw:
         argument_type: file.bigWig
