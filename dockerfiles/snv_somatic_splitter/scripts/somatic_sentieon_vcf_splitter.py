@@ -2,7 +2,7 @@
 
 ################################################
 #
-#  Script to split Sentieon somatic vcf 3 ways
+#  Script to split Sentieon somatic vcf by variant type
 #   and filter for high confidence variants
 #
 ################################################
