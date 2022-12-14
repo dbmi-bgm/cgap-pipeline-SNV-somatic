@@ -27,7 +27,6 @@ inputs:
     default: 'pre'
     doc: base name of the full PASS-filtered output vcf gz file
 
-
 outputs:
 
   - id: indel_snv_pass
