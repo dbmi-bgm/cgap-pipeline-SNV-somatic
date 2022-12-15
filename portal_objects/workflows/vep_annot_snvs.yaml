@@ -74,7 +74,7 @@ input:
     argument_type: parameter.string
 
 ## Output information #######################################
-#     Output files
+#     Output files and quality controls
 #############################################################
 output:
 

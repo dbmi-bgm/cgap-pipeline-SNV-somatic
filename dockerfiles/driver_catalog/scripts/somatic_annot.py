@@ -289,11 +289,11 @@ class HartwigDecisionTree:
         else:
             with open(save_vcf, "w") as output:
                 vcf_obj.header.add_tag_definition(
-                    f'##INFO=<ID={DRIVER_field},Number=1,Type=String,Description="Putative driver mutation calculated based on Hartwig\'s decision tree. Format: Gene|Ensemble Transcript ID|Protein change">',
+                    f'##INFO=<ID={DRIVER_field},Number=.,Type=String,Description="Putative driver mutation calculated based on Hartwig\'s decision tree. Format: Gene|Ensembl Transcript ID|Protein change">',
                     tag_type="INFO",
                 )
                 vcf_obj.header.add_tag_definition(
-                    f'##INFO=<ID={HOTSPOT_field},Number=1,Type=String,Description="Somatic hotspot location, contains a list of potentially affected genes">',
+                    f'##INFO=<ID={HOTSPOT_field},Number=.,Type=String,Description="Somatic hotspot location, contains a list of potentially affected genes">',
                     tag_type="INFO",
                 )
                 vcf_obj.write_header(output)

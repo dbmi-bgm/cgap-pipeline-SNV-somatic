@@ -26,7 +26,7 @@ input:
     argument_type: file.vcf_gz
 
 ## Output information #######################################
-#     Output files
+#     Output files and quality controls
 #############################################################
 output:
 
