@@ -142,7 +142,7 @@ class DriverCnv(Driver):
         """
 
         A function used to serialize the object into a dictionary.
-        It is used to dump the varian into the JSON format.
+        It is used to dump the variant into the JSON format.
 
         """
         return vars(self)
