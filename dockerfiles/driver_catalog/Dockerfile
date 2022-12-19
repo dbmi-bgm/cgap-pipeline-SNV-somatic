@@ -6,7 +6,8 @@ MAINTAINER Michele Berselli (berselli.michele@gmail.com), Dominika Maziec (domin
 
 #######################################################################
 #     General updates & installing necessary Linux components
-#       - autoconf, pkg-config used by vcftools
+#       - autoconf, pkg-config
+#.      - bcftools
 #######################################################################
 RUN apt-get update -y && apt-get install -y \
     locales \
