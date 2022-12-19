@@ -42,5 +42,6 @@ outputs:
       glob: $(inputs.prefix + "_bnd.vcf.gz")
     secondaryFiles:
       - .tbi
+
 doc: |
   run somatic_sentieon_vcf_splitter.py to create 2 VCF files containing SNV/INDEL and SV
