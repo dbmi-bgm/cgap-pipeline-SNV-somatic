@@ -99,7 +99,7 @@ class DriverSnvIndel(Driver):
         """
 
         A function used to serialize the object into a dictionary.
-        It is used to dump the varian into a JSON format, some of the parameters are not included.
+        It is used to dump the variant into a JSON format, some of the parameters are not included.
         All the None values are discarded.
 
         """
