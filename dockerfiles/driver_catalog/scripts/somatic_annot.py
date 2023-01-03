@@ -6,7 +6,16 @@ import pandas
 import subprocess
 import gzip
 
+
+# VCF TAGS
+#####################################################################################
 CSQ_tag = "CSQ"
+#####################################################################################
+
+# VEP OUTPUT
+# Definitions of the output fields available under "Default VEP output" section:
+# https://www.ensembl.org/info/docs/tools/vep/vep_formats.html?redirect=no
+#####################################################################################
 FEATURE_field = "Feature"
 FEATURE_TYPE_field = "Feature_type"
 SYMBOL_field = "SYMBOL"
@@ -18,9 +27,13 @@ HGVSp_field = "HGVSp"
 CANONICAL_field = "CANONICAL"
 DRIVER_field = "DRIVER"
 HOTSPOT_field = "HOTSPOT"
+#####################################################################################
+
+# OTHER CONSTANTS
+#####################################################################################
 CATEGORY_SNV_INDEL = "mutational"
 CANONICAL_TRUE = "YES"
-
+#####################################################################################
 
 class Driver:
     """
@@ -112,7 +125,9 @@ class DriverSnvIndel(Driver):
 
     def __str__(self):
         """
+
         String represation of the object, used for the DRIVER field in INFO.
+
         """
         return f"{self.gene}|{self.ens_gene}|{self.transcript_id}"
 
@@ -161,13 +176,19 @@ class HartwigDecisionTree:
     """
 
     def __init__(self, driver_panel, hotspot_mutations):
+
+        # load the driver panel as a data frame
         gene_panel = pandas.read_csv(driver_panel, sep="\t")
+
+        # create a list of genes for which missense variants should be reported
         self.report_missense = [
             gene[0]
             for gene in gene_panel.loc[
                 gene_panel["reportMissense"] == True, ["gene"]
             ].values.tolist()
         ]
+
+        # create a list of genes for which nonsense variants should be reported
         self.report_nonsense = [
             gene[0]
             for gene in gene_panel.loc[
@@ -175,17 +196,30 @@ class HartwigDecisionTree:
             ].values.tolist()
         ]
 
+        # create a dictionary of genes for which additional reported transcripts should be reported
+        # Keys: gene symbols
+        # Values: lists of transcript IDs
+        # Example:
+        # {"CDKN2A" : ["ENST00000579755"] }
         self.non_canonical = (
             gene_panel.set_index("gene")["additionalReportedTranscripts"]
             .dropna()
             .to_dict()
         )
+
+        # create a list of genes for which somatic hotspot mutations should be reported 
         self.hotspot = [
             gene[0]
             for gene in gene_panel.loc[
                 gene_panel["reportSomaticHotspot"] == True, ["gene"]
             ].values.tolist()
         ]
+
+        # create a dictionary of hotspot mutations
+        # Keys: Variant key CHROM_POS_REF_ALT
+        # Values: Variant object
+        # Example:
+        # TODO to check
         self.hotspot_dict = {}
         hotspot_vcf = Vcf(hotspot_mutations)
 
@@ -219,47 +253,94 @@ class HartwigDecisionTree:
         :rtype: list
         """
 
-        # Helper functions
-
+        
+        # Helper sub-function
         def check_non_canonical(gene, transcript):
+            """
+            Check if the given transcript should be reported for the given gene
+
+            :param gene: gene symbol
+            :type gene: str
+
+            :param transcript: transcript ID
+            :type transcript: str
+
+            :return: True if the transcript should be reported, otherwise False
+            :rtype: bool             
+            """
 
             if gene in self.non_canonical.keys():
                 if transcript in self.non_canonical[gene]:
                     return True
             return False
 
-        def query_hotspot(vnt_obj):
+        # Helper sub-function   
+        def check_hotspot(vnt_obj):
+            """
+            Check if the given variant is a hotspot mutation
+
+            :param vnt_obj: variant to check
+            :type vnt_obj: Variant
+
+            :return: True if the variant is a hotspot mutation, otherwise False
+            :rtype: bool
+            """
+
             vnt_key = self.__create_hotspot_key(vnt_obj)
             if vnt_key in self.hotspot_dict.keys():
                 return True
             else:
                 return False
 
+        # Helper sub-function
         def query(vnt_obj):
-            transcripts = vnt_obj.get_tag_value(CSQ_tag).split(",")
+            """
+            Determine if a variant is a putative driver mutation
+
+            :param vnt_obj: variant
+            :type vnt_obj: Variant
+
+            :return: DriverSnvIndel objects
+            :rtype: list
+            """
+
+            # get a dictionary of transcripts from the CSQ tag
             transcripts_dict = vcf_obj.create_transcripts_dict(vnt_obj)
+
+            # results list
             drivers = []
 
+            #iterate over transcripts
             for transcript, values in transcripts_dict.items():
-                ADD_TRANSCRIPT = False
-                consequence = values[CONSEQUENCE_field]
-                gene = values[SYMBOL_field]
-                ens_gene = values[GENE_field]
-                HGVSc = values[HGVSc_field]
-                HGVSp = values[HGVSp_field]
-                transcript_id = values[FEATURE_field]
-                canonical = values[CANONICAL_field]
 
+                ADD_TRANSCRIPT = False # flag to determine if the transcript should considered
+                
+                consequence = values[CONSEQUENCE_field] # Consequence value
+                gene = values[SYMBOL_field] # SYMBOL value
+                ens_gene = values[GENE_field] # Gene value
+                HGVSc = values[HGVSc_field] # HGVSc value
+                HGVSp = values[HGVSp_field] # HGVSp value
+                transcript_id = values[FEATURE_field] # FEATURE value
+                canonical = values[CANONICAL_field] # CANONICAL value
+                
+                
+                # DECISION TREE LOGIC
+
+                # consider all the canonical transcripts
                 if canonical == CANONICAL_TRUE:
                     ADD_TRANSCRIPT = True
                 else:
+                    # check if non canonical transcript should be considered
                     ADD_TRANSCRIPT = check_non_canonical(gene, transcript)
                 if (
+
+                    # check if it is a missense variant and if the gene should be reported
                     (
                         ("missense_variant" in consequence)
                         and (gene in self.report_missense)
                     )
                     or (
+                         # check if it is a nonsense variant and if the gene should be reported
                         (
                             "frameshift_variant" in consequence
                             or "stop_gained" in consequence
@@ -267,6 +348,8 @@ class HartwigDecisionTree:
                         and (gene in self.report_nonsense)
                     )
                 ) and ADD_TRANSCRIPT == True:
+                    
+                    # create a driver object and add to the results
                     drivers.append(
                         DriverSnvIndel(
                             vnt_obj=vnt_obj,
@@ -277,26 +360,42 @@ class HartwigDecisionTree:
                             protein_mutation=HGVSp.split(":")[1],
                         )
                     )
+
+            # return list of putatvie drivers
             return drivers
 
         # Main
         vcf_obj = VcfVep(input_vcf)
         all_drivers = []
+
+        # if return only driver objects
         if save_vcf == None:
             for vnt_obj in vcf_obj.parse_variants():
                 all_drivers += query(vnt_obj)
 
+        # save to a VCF file
         else:
+
             with open(save_vcf, "w") as output:
+
+                # adding header definitions
+
+                # DRIVER definition
                 vcf_obj.header.add_tag_definition(
                     f'##INFO=<ID={DRIVER_field},Number=.,Type=String,Description="Putative driver mutation calculated based on Hartwig\'s decision tree. Format: Gene|Ensembl Transcript ID|Protein change">',
                     tag_type="INFO",
                 )
+                
+                # HOTSPOT definition
                 vcf_obj.header.add_tag_definition(
                     f'##INFO=<ID={HOTSPOT_field},Number=.,Type=String,Description="Somatic hotspot location, contains a list of potentially affected genes">',
                     tag_type="INFO",
                 )
+
+                # writing the updated header to the file
                 vcf_obj.write_header(output)
+
+                # iterate over each variant in the file and find putative drivers
                 for vnt_obj in vcf_obj.parse_variants():
                     # Find putative drivers
                     drivers = query(vnt_obj)
@@ -308,25 +407,37 @@ class HartwigDecisionTree:
                         vnt_obj.add_tag_info(f"{DRIVER_field}={DRIVER}")
 
                     # Check if it is a hotspot mutation
-                    hotspot = query_hotspot(vnt_obj)
+                    hotspot = check_hotspot(vnt_obj)
 
                     if hotspot:
+
+                        # list of gene symbols that should be reported as affected genes by the hotspot mutation
                         hotspot_genes = []
+
+                        # get transcripts for the variant
                         transcripts_dict = vcf_obj.create_transcripts_dict(vnt_obj)
 
                         for _, values in transcripts_dict.items():
+
+                            # check if a hotspot mutation should be reported for the given gene                      
                             if values[SYMBOL_field] in self.hotspot:
+
+                                # add gene
                                 hotspot_genes += [values[SYMBOL_field]]
 
-                        #only unique values
+                        #remove repetetive genes
                         hotspot_genes = set(hotspot_genes)
+
+                        # Add the HOTSPOT field for the variant only if there are genes afftected by the hotspot mutation
                         if len(hotspot_genes) > 0:
                             vnt_obj.add_tag_info(
                                 f"{HOTSPOT_field}={'|'.join(hotspot_genes)}"
                             )
 
+                    # writing the varint to the VCF file
                     vcf_obj.write_variant(output, vnt_obj)
 
+            # compression and indexing
             subprocess.run(["bgzip", save_vcf])
             subprocess.run(["tabix", save_vcf + ".gz"])
 
@@ -354,12 +465,16 @@ class VcfVep(Vcf):
         :return: transcripts
         :rtype: dict
         """
+        # get CSQ values
         fields = vnt_obj.get_tag_value(CSQ_tag).split(",")
         transcripts_dict = {}
         for field in fields:
             values = field.split("|")
 
+            # merge CSQ fields with the values and conver it into a dictionary
             record = dict(zip(self.header.CSQ_fields, values))
+
+            # add transcripts only to the final dictionary
             if record[FEATURE_TYPE_field] == TRANSCRIPT:
                 transcript_id = record[FEATURE_field]
                 transcripts_dict[transcript_id] = record
@@ -372,20 +487,29 @@ class VcfVep(Vcf):
 
         def get_CSQ_fields(self):
             """
-            Get the CSQ fields from VEP
+            Get the CSQ fields from the header
+
+            Example:
+            For a VCF having the following definition of CSQ:
+            ##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Ensembl VEP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE"
+
+            This function will return: [Allele, Consequence, IMPACT, SYMBOL, Gene, Feature_type, Feature, BIOTYPE]
 
             :return: fields
             :rtype: list
             """
             for line in self.definitions.split("\n")[:-1]:
+                # finding CSQ definition in the header
                 if line.startswith("##INFO=<ID=CSQ,"):
                     try:
+                        # getting format
                         format = line.split("Format:")[1]
                         # Cleaning format
                         format = (
                             format.replace("'", "").replace('"', "").replace(">", "")
                         )
 
+                        # splitting fields
                         return format.split("|")
                     except Exception:
                         raise ValueError(
@@ -404,15 +528,23 @@ def build_from_tsv(input_tsv):
     :return: drivers
     :rtype: list
     """
-    input_file = csv.DictReader(gzip.open(input_tsv, mode="rt"), delimiter="\t")
+    # read a compressed TSV file 
+    input_cnvs = csv.DictReader(gzip.open(input_tsv, mode="rt"), delimiter="\t")
     results = []
+    # expected values in the TSV file
     fields = ["chrom", "start", "end", "gene", "category"]
-    for inn in input_file:
-        record = dict(inn)
+    # iterate over each CNV
+    for cnv in input_cnvs:
+        
+        # convert to a dictionary Example: { "chrom" : 1, "start": 100, "end ": 1000, "gene": TP53, "category": amplicitaion}
+        record = dict(cnv)
+
         if sorted(record.keys()) != sorted(fields):
             raise Exception(
                 f"Wrong fields in the CNV file expected {fields}, got {list(record.keys())}"
             )
+        
+        # cerate DriverCnv objectsd
         results += [DriverCnv(**record).to_dict()]
     return results
 
@@ -429,17 +561,28 @@ def build_from_vcf(input_vcf):
     """
     records = []
     vcf_obj = VcfVep(input_vcf)
+
+    # iterate over variants
     for vnt_obj in vcf_obj.parse_variants():
+
+        # get a dictionary of transcripts from the CSQ tag
         transcripts_dict = vcf_obj.create_transcripts_dict(vnt_obj)
 
+        # list of genes affected by hotspot mutations
         hotspot_genes = []
+        # try to get HOTSPOT from INFO
         try:
             hotspot_genes = vnt_obj.get_tag_value(HOTSPOT_field).split("|")
+
+            # iterate over transcripts, find canonical one, and collect all the necessary information
             for _, values in transcripts_dict.items():
+
+                # check if for the given gene hotspot mutation should be reported and check if it is a canonical transcript
                 if (
                     values[SYMBOL_field] in hotspot_genes
                     and values[CANONICAL_field] == CANONICAL_TRUE
                 ):
+                    # create a driver object, add to the final list
                     records.append(
                         DriverSnvIndel(
                             vnt_obj=vnt_obj,
@@ -452,21 +595,28 @@ def build_from_vcf(input_vcf):
                         ).to_dict()
                     )
         # TODO: we should change it into custom errors
+        
         except Exception:
+            # pass if it is not a hotspot mutation
             pass
-
+        
+        # try to get DRIVER from INFO
         try:
             drivers = vnt_obj.get_tag_value(DRIVER_field).split(",")
 
-        # TODO: we should change it into custom errors
+        # TODO: we should change it into custom error
         except Exception:
+            # continue the loop, go to the next variant if DRIVER is missing
             continue
 
         for driver in drivers:
-            gene_d, transcript_gene_d, transcript_id_d = driver.split("|")
+            gene_d, _, transcript_id_d = driver.split("|")
             # if its in hotspot_genes, it's been already added
             if gene_d not in hotspot_genes:
+                # get values for the transcript ID
                 trans = transcripts_dict[transcript_id_d]
+
+                # create a driver object, add to the final list
                 records.append(
                     DriverSnvIndel(
                         vnt_obj=vnt_obj,
@@ -479,6 +629,7 @@ def build_from_vcf(input_vcf):
                     ).to_dict()
                 )
 
+    # return all the driver objects
     return records
 
 
