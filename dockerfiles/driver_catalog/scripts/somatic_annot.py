@@ -219,7 +219,7 @@ class HartwigDecisionTree:
         # Keys: Variant key CHROM_POS_REF_ALT
         # Values: Variant object
         # Example:
-        # TODO to check
+        # {'chr16_2054395_CTC_AGG': granite.lib.vcf_parser.Vcf.Variant}
         self.hotspot_dict = {}
         hotspot_vcf = Vcf(hotspot_mutations)
 
