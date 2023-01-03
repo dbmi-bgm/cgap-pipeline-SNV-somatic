@@ -471,7 +471,7 @@ class VcfVep(Vcf):
         for field in fields:
             values = field.split("|")
 
-            # merge CSQ fields with the values and conver it into a dictionary
+            # merge CSQ fields with the values and convert it into a dictionary
             record = dict(zip(self.header.CSQ_fields, values))
 
             # add transcripts only to the final dictionary
