@@ -293,7 +293,7 @@ class HartwigDecisionTree:
                 return False
 
         # Helper sub-function
-        def query(vnt_obj):
+        def run_tree(vnt_obj):
             """
             Determine if a variant is a putative driver mutation
 
@@ -371,7 +371,7 @@ class HartwigDecisionTree:
         # if return only driver objects
         if save_vcf == None:
             for vnt_obj in vcf_obj.parse_variants():
-                all_drivers += query(vnt_obj)
+                all_drivers += run_tree(vnt_obj)
 
         # save to a VCF file
         else:
@@ -398,7 +398,7 @@ class HartwigDecisionTree:
                 # iterate over each variant in the file and find putative drivers
                 for vnt_obj in vcf_obj.parse_variants():
                     # Find putative drivers
-                    drivers = query(vnt_obj)
+                    drivers = run_tree(vnt_obj)
                     all_drivers += drivers
 
                     # Add the DRIVER field for the variant only if there are drivers
