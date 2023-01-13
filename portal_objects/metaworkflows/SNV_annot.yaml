@@ -2,7 +2,7 @@
 #     General information for the pipeline
 #############################################################
 name: SNV_somatic_downstream
-description: Downstream pipeline to annotate somatic variants
+description: Downstream pipeline to annotate somatic variants and flag putative driver mutations.
 
 ## General arguments ########################################
 #     Pipeline input, reference files, and general arguments
