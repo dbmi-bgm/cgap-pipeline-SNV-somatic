@@ -6,7 +6,7 @@ description: Identify putative cancer drivers from SNV and INDEL calls.
 
 runner:
   language: cwl
-  main: driver_annot.cwl
+  main: putative_drivers_snv.cwl
 
 software:
   - granite@0.2.0

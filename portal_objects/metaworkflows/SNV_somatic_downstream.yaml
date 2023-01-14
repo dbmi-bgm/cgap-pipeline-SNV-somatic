@@ -75,17 +75,17 @@ input:
       - cadd-indel@1.6
 
   phylop30bw:
-    argument_type: file.BigWig
+    argument_type: file.bigWig
     files:
       - phylop30way-mammalian@hg38
   
   phylop100bw:
-    argument_type: file.BigWig
+    argument_type: file.bigWig
     files:
       - phylop100way-vertebrate@hg38
 
   phastc100bw:
-    argument_type: file.BigWig
+    argument_type: file.bigWig
     files:
       - phastcons100way-vertebrate@hg38
 
@@ -106,7 +106,6 @@ input:
   assembly:
     argument_type: parameter.string
     value: "GRCh38"
-
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
@@ -270,5 +269,5 @@ workflows:
         ebs_size: 1.6x
         EBS_optimized: True
         spot_instance: False
-        run_name: run_putative_drivers
+        run_name: run_putative_drivers_snv
         behavior_on_capacity_limit: wait_and_retry

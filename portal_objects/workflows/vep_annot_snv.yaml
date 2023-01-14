@@ -6,7 +6,7 @@ description: Run VEP to annotate input VCF file.
 
 runner:
   language: cwl
-  main: vep-annot-snv.cwl
+  main: vep_annot_snv.cwl
 
 software: 
   - VEP@101

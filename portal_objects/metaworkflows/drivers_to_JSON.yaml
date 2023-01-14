@@ -18,7 +18,6 @@ input:
     argument_type: file.tsv_gz
     dimensionality: 1 
 
-
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
 #############################################################
@@ -43,7 +42,7 @@ workflows:
 
       putative_drivers_json:
         description: GosCan compatible file containing driver mutations for SNVs, INDELs and CNVs
-        file_type: JSON
+        file_type: driver JSON
     
     config:
         instance_type:
@@ -52,5 +51,5 @@ workflows:
         ebs_size: 1.6x
         EBS_optimized: True
         spot_instance: False
-        run_name: run_drivers_dump
+        run_name: run_dump_drivers
         behavior_on_capacity_limit: wait_and_retry

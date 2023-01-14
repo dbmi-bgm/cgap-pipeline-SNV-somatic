@@ -2,11 +2,11 @@
 #     General information for the workflow
 #############################################################
 name: splitter
-description: Separete SNVs and INDELs from SVs.
+description: Separate SNVs and INDELs from SVs.
 
 runner:
   language: cwl
-  main: somatic_sentieon_vcf_splitter.cwl
+  main: splitter.cwl
 
 software:
   - granite@0.2.0

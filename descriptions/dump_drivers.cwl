@@ -18,13 +18,13 @@ inputs:
     type: File
     inputBinding:
       prefix: -v
-    doc: expect the path to the somatic vcf gz file
+    doc: VCF file containing SNVs and INDELs annotated with putative driver mutations and hotspot locations
 
   - id: cnv
     type: File
     inputBinding:
       prefix: -c
-    doc: SV file containing somatic CNVs
+    doc: TSV file containing CNVs identified as putative driver mutations
 
   - id: output
     type: string
