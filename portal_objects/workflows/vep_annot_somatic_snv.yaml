@@ -1,7 +1,7 @@
 ## Workflow information #####################################
 #     General information for the workflow
 #############################################################
-name: vep
+name: vep_annot_somatic_snv
 description: Run VEP to annotate input VCF file.
 
 runner:

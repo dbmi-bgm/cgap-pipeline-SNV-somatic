@@ -10,6 +10,8 @@ description: Save driver mutations (SNVs, INDELs, CNVs) in a JSON file.
 #############################################################
 input:
 
+  ## Workflow arguments ##############
+  ####################################
   vcf:
     argument_type: file.vcf_gz
     dimensionality: 1
@@ -28,6 +30,8 @@ workflows:
   ############################################
   dump_drivers:
 
+    ## Workflow arguments ##############
+    ####################################
     input:
 
       vcf:
@@ -38,9 +42,11 @@ workflows:
         argument_type: file.tsv_gz
         input_dimension: 1
     
+    ## Output ##########################
+    ####################################
     output:
 
-      putative_drivers_json:
+      drivers_json:
         description: GosCan compatible file containing driver mutations for SNVs, INDELs and CNVs
         file_type: driver JSON
     

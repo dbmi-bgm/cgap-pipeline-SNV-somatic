@@ -92,12 +92,12 @@ input:
   gene_panel:
     argument_type: file.tsv_gz
     files:
-      - gene_panel_hartwig@hg38
+      - gene_panel_hartwig@v09132022
   
   somatic_hotspot:
     argument_type: file.vcf_gz
     files:
-      - somatic_hotspot_mutations@hg38
+      - somatic_hotspot_mutations@v09132022
 
   version: 
     argument_type: parameter.string
@@ -151,9 +151,9 @@ workflows:
         behavior_on_capacity_limit: wait_and_retry
   
   ## Workflow definition #####################
-  #  vep
+  #  vep_annot_somatic_snv
   ############################################
-  vep:
+  vep_annot_somatic_snv:
 
     ## Workflow arguments ##############
     ####################################
@@ -220,7 +220,7 @@ workflows:
     ####################################
     output:
 
-      output:
+      annotated_vcf:
         description: output from VEP in the VCF format
         file_type: annotated VCF
 
@@ -233,18 +233,21 @@ workflows:
         ebs_size: 1.35x
         EBS_optimized: True
         spot_instance: False
-        run_name: run_vep
+        run_name: run_vep_annot_somatic_snv
         behavior_on_capacity_limit: wait_and_retry
   
   ## Workflow definition #####################
   #  putative_drivers_snv
   ############################################
   putative_drivers_snv:
+
+    ## Workflow arguments ##############
+    ####################################
     input:
       input_vcf:
         argument_type: file.vcf_gz
         dimensionality: 1
-        source: vep
+        source: vep_annot_somatic_snv
         source_argument_name: annotated_vcf
 
       gene_panel:

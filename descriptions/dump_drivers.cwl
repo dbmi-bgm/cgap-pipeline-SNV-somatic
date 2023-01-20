@@ -35,7 +35,7 @@ inputs:
 
 outputs:
 
-  - id: putative_drivers_json
+  - id: drivers_json
     type: File
     outputBinding:
       glob: $(inputs.output)
