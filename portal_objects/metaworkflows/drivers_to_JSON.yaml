@@ -56,6 +56,6 @@ workflows:
         - t3.xlarge
         ebs_size: 1.6x
         EBS_optimized: True
-        spot_instance: False
+        spot_instance: True
         run_name: run_dump_drivers
         behavior_on_capacity_limit: wait_and_retry

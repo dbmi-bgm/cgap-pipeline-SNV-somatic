@@ -146,7 +146,7 @@ workflows:
          - c5.4xlarge
         ebs_size: 1.6x
         EBS_optimized: True
-        spot_instance: False
+        spot_instance: True
         run_name: run_splitter
         behavior_on_capacity_limit: wait_and_retry
   
@@ -271,6 +271,6 @@ workflows:
         - t3.xlarge
         ebs_size: 1.6x
         EBS_optimized: True
-        spot_instance: False
+        spot_instance: True
         run_name: run_putative_drivers_snv
         behavior_on_capacity_limit: wait_and_retry
