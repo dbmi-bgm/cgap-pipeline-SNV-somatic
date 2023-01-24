@@ -1,0 +1,36 @@
+## Workflow information #####################################
+#     General information for the workflow
+#############################################################
+name: putative_drivers_snv
+description: Identify putative cancer drivers from SNV and INDEL calls.
+
+runner:
+  language: cwl
+  main: putative_drivers_snv.cwl
+
+software:
+  - granite@0.2.0
+
+## Input information ########################################
+#     Input files and parameters
+#############################################################
+input:
+
+  input_vcf:
+    argument_type: file.vcf_gz
+
+  gene_panel:
+    argument_type: file.tsv_gz
+
+  somatic_hotspot:
+    argument_type: file.vcf_gz
+
+## Output information #######################################
+#     Output files and quality controls
+#############################################################
+output:
+
+  putative_drivers_vcf:
+    argument_type: file.vcf_gz
+    secondary_files:
+      - vcf_gz_tbi

@@ -1,0 +1,30 @@
+## Workflow information #####################################
+#     General information for the workflow
+#############################################################
+name: dump_drivers
+description: Store putative cancer driver SNVs, INDELs and CNVs. |
+            Produce a GoScan compatible JSON file.
+
+runner:
+  language: cwl
+  main: dump_drivers.cwl
+
+
+## Input information ########################################
+#     Input files and parameters
+#############################################################
+input:
+
+  vcf:
+    argument_type: file.vcf_gz
+  cnv:
+    argument_type: file.tsv_gz
+
+
+## Output information #######################################
+#     Output files and quality controls
+#############################################################
+output:
+
+  drivers_json:
+    argument_type: file.json

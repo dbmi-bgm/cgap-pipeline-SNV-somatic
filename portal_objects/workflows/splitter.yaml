@@ -1,0 +1,35 @@
+## Workflow information #####################################
+#     General information for the workflow
+#############################################################
+name: splitter
+description: Separate SNVs and INDELs from SVs.
+
+runner:
+  language: cwl
+  main: splitter.cwl
+
+software:
+  - granite@0.2.0
+
+## Input information ########################################
+#     Input files and parameters
+#############################################################
+input:
+
+  input_vcf:
+    argument_type: file.vcf_gz
+
+## Output information #######################################
+#     Output files and quality controls
+#############################################################
+output:
+
+  indel_snv_pass:
+    argument_type: file.vcf_gz
+    secondary_files:
+      - vcf_gz_tbi
+
+  sv_bnd_pass:
+    argument_type: file.vcf_gz
+    secondary_files:
+      - vcf_gz_tbi
