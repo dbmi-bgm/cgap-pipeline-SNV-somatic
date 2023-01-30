@@ -10,15 +10,13 @@ description: Save driver mutations (SNVs, INDELs, CNVs) in a JSON file.
 #############################################################
 input:
 
-  ## Workflow arguments ##############
-  ####################################
   vcf:
     argument_type: file.vcf_gz
     dimensionality: 1
-  
+
   cnv:
     argument_type: file.tsv_gz
-    dimensionality: 1 
+    dimensionality: 1
 
 ## Workflows and dependencies ###############################
 #     Information for the workflows and their dependencies
@@ -30,7 +28,7 @@ workflows:
   ############################################
   dump_drivers:
 
-    ## Workflow arguments ##############
+    ## Specific arguments ##############
     ####################################
     input:
 
@@ -41,7 +39,7 @@ workflows:
       cnv:
         argument_type: file.tsv_gz
         input_dimension: 1
-    
+
     ## Output ##########################
     ####################################
     output:
@@ -49,7 +47,9 @@ workflows:
       drivers_json:
         description: GosCan compatible file containing driver mutations for SNVs, INDELs and CNVs
         file_type: driver JSON
-    
+
+    ## EC2 Configuration to use ########
+    ####################################
     config:
         instance_type:
         - t3.large

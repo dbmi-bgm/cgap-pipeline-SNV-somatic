@@ -8,7 +8,7 @@ runner:
   language: cwl
   main: vep_annot_snv.cwl
 
-software: 
+software:
   - VEP@101
 
 ## Input information ########################################
@@ -67,7 +67,7 @@ input:
   nthreads:
     argument_type: parameter.integer
 
-  version: 
+  version:
     argument_type: parameter.string
 
   assembly:

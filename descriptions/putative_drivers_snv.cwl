@@ -11,7 +11,7 @@ hints:
   - class: DockerRequirement
     dockerPull: ACCOUNT/driver_catalog:VERSION
 
-baseCommand: [python3, /usr/local/bin/somatic_annot.py, driverCatalogVCF ] 
+baseCommand: [python3, /usr/local/bin/somatic_annot.py, driverCatalogVCF ]
 
 inputs:
   - id: input_vcf

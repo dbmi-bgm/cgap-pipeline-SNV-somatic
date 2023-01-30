@@ -38,7 +38,7 @@ outputs:
 
   - id: sv_bnd_pass
     type: File
-    outputBinding: 
+    outputBinding:
       glob: $(inputs.prefix + "_bnd.vcf.gz")
     secondaryFiles:
       - .tbi
