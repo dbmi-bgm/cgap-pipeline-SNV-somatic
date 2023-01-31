@@ -2,7 +2,7 @@
 
 # CGAP Pipeline for Somatic Single Nucleotide Variants and small INDELs
 
-This repository contains components for the CGAP pipeline for single nucleotide variants (SNVs) and small INDELs in somatic data:
+This repository contains components for the CGAP pipeline for Single Nucleotide Variants (SNVs) and small insertions/delitions (INDELs) in somatic data:
 
   * CWL workflow descriptions
   * CGAP Portal *Workflow* and *MetaWorkflow* objects
