@@ -130,12 +130,12 @@ workflows:
     output:
 
       indel_snv_pass:
-        description: VCF containing SNVs and INDELs of the input VCF
         file_type: raw VCF
+        description: VCF containing SNVs and INDELs of the input VCF
 
       sv_bnd_pass:
-        description: VCF containing SVs of the input VCF
         file_type: raw VCF
+        description: VCF containing SVs of the input VCF
 
     ## EC2 Configuration to use ########
     ####################################
@@ -220,13 +220,14 @@ workflows:
     output:
 
       annotated_vcf:
-        description: output from VEP in the VCF format
         file_type: annotated VCF
+        description: output from VEP in the VCF format
 
     ## EC2 Configuration to use ########
     ####################################
     config:
       instance_type:
+        - c5n.18xlarge
         - m6a.24xlarge
         - m6a.32xlarge
       ebs_size: "1.35x"
@@ -260,8 +261,8 @@ workflows:
     output:
 
       putative_drivers_vcf:
+        file_type: drivers VCF
         description: annotated VCF containing putative drivers
-        file_type: annotated VCF
 
     ## EC2 Configuration to use ########
     ####################################

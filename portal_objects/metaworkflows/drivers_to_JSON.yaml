@@ -45,8 +45,8 @@ workflows:
     output:
 
       drivers_json:
+        file_type: drivers JSON
         description: GosCan compatible file containing driver mutations for SNVs, INDELs and CNVs
-        file_type: driver JSON
 
     ## EC2 Configuration to use ########
     ####################################
