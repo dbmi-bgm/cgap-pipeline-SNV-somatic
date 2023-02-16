@@ -51,11 +51,11 @@ workflows:
     ## EC2 Configuration to use ########
     ####################################
     config:
-        instance_type:
+      instance_type:
         - t3.large
         - t3.xlarge
-        ebs_size: "1.6x"
-        EBS_optimized: True
-        spot_instance: True
-        run_name: run_dump_drivers
-        behavior_on_capacity_limit: wait_and_retry
+      ebs_size: "1.6x"
+      EBS_optimized: True
+      spot_instance: True
+      run_name: run_dump_drivers
+      behavior_on_capacity_limit: wait_and_retry

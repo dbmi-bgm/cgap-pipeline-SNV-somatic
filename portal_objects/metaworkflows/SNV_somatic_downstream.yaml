@@ -140,15 +140,15 @@ workflows:
     ## EC2 Configuration to use ########
     ####################################
     config:
-        instance_type:
-         - t3.large
-         - t3.xlarge
-         - c5.4xlarge
-        ebs_size: "1.6x"
-        EBS_optimized: True
-        spot_instance: True
-        run_name: run_splitter
-        behavior_on_capacity_limit: wait_and_retry
+      instance_type:
+        - t3.large
+        - t3.xlarge
+        - c5.4xlarge
+      ebs_size: "1.6x"
+      EBS_optimized: True
+      spot_instance: True
+      run_name: run_splitter
+      behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
   #  vep_annot_somatic_snv
@@ -226,14 +226,14 @@ workflows:
     ## EC2 Configuration to use ########
     ####################################
     config:
-        instance_type:
-          - m6a.24xlarge
-          - m6a.32xlarge
-        ebs_size: "1.35x"
-        EBS_optimized: True
-        spot_instance: True
-        run_name: run_vep_annot_somatic_snv
-        behavior_on_capacity_limit: wait_and_retry
+      instance_type:
+        - m6a.24xlarge
+        - m6a.32xlarge
+      ebs_size: "1.35x"
+      EBS_optimized: True
+      spot_instance: True
+      run_name: run_vep_annot_somatic_snv
+      behavior_on_capacity_limit: wait_and_retry
 
   ## Workflow definition #####################
   #  putative_drivers_snv
@@ -266,11 +266,11 @@ workflows:
     ## EC2 Configuration to use ########
     ####################################
     config:
-        instance_type:
+      instance_type:
         - t3.large
         - t3.xlarge
-        ebs_size: "1.6x"
-        EBS_optimized: True
-        spot_instance: True
-        run_name: run_putative_drivers_snv
-        behavior_on_capacity_limit: wait_and_retry
+      ebs_size: "1.6x"
+      EBS_optimized: True
+      spot_instance: True
+      run_name: run_putative_drivers_snv
+      behavior_on_capacity_limit: wait_and_retry
