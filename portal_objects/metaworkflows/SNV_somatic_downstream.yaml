@@ -228,8 +228,14 @@ workflows:
     config:
       instance_type:
         - c5n.18xlarge
+        - c5.24xlarge
+        - c5a.24xlarge
+        - m5.24xlarge
+        - m5a.24xlarge
+        - m6i.24xlarge
         - m6a.24xlarge
-        - m6a.32xlarge
+        - c6i.24xlarge
+        - c6a.24xlarge
       ebs_size: "1.35x"
       EBS_optimized: True
       spot_instance: True
