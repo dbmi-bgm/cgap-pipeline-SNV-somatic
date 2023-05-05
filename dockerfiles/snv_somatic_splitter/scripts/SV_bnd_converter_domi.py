@@ -1,25 +1,14 @@
-#!/usr/bin/env python3
-
-################################################
-#
-#  Script to convert Sentieon SVs to BEDPE
-#
-################################################
-
-
-################################################
-#   Libraries
-################################################
 import argparse
-from granite.lib import vcf_parser
 import csv
+from granite.lib import vcf_parser
+
+SVTYPE = "SVTYPE"
+MATEID = "MATEID"
+CIPOS = "CIPOS"
 
 
-################################################
-#   Classes
-################################################
 class Bnd:
-    def __init__(self, vnt_obj, index):
+    def __init__(self, vnt_obj):
         self.CHROM = vnt_obj.CHROM
         self.POS = vnt_obj.POS
         self.ID = vnt_obj.ID
@@ -28,8 +17,8 @@ class Bnd:
         self.QUAL = vnt_obj.QUAL
         self.INFO = vnt_obj.INFO
         self.MATES = self._mate_lister(vnt_obj)
-        self.INDEX = index
-        self.sgl = False  # single breakend
+        self.SGL = False  # single breakend
+        self.SVTYPE = vnt_obj.get_tag_value(SVTYPE)
         if len(self.MATES) > 0:
             strands = [
                 "-" if any(alt.startswith(x) for x in ["[", "]"]) else "+"
@@ -37,23 +26,38 @@ class Bnd:
             ]
             self.STRANDS = dict(zip(self.MATES, strands))
         else:
-            self.sgl = True
+            self.SGL = True
             if self.ALT[0].startswith("."):  # TODO: check how many alternates
                 self.STRANDS = {None: "-"}
+
             elif self.ALT[0].endswith("."):
                 self.STRANDS = {None: "+"}
 
-        """if len(self.MATES) == 0:
-            print(self.REF)
-            print(self.STRANDS)
-            print(self.ALT)
-            print("*************************")"""
+        self.CIPOS = self._get_cipos(vnt_obj)
+
+    def calculate_bedpe_end(self):
+        if self.CIPOS:
+            return self.POS + abs(self.CIPOS[1])
+        else:
+            return self.POS
+
+    def calculate_bedpe_start(self):
+        if self.CIPOS:
+            return self.POS - abs(self.CIPOS[0]) - 1
+        else:
+            return self.POS - 1
 
     def _mate_lister(self, vnt_obj):
         try:
-            return vnt_obj.get_tag_value("MATEID").split(",")
+            return vnt_obj.get_tag_value(MATEID).split(",")
         except:
             return []
+
+    def _get_cipos(self, vnt_obj):
+        try:
+            return list(map(int, vnt_obj.get_tag_value(CIPOS).split(",")))
+        except:
+            return None
 
 
 class Converter:
@@ -64,14 +68,14 @@ class Converter:
 
     def pair_bnds(self):
         pairs = []
-
         for _, bnd_obj in self.bnds.items():
-            print(bnd_obj.CHROM)
             pairs += [
                 [bnd_obj.ID, mate_id]
                 for mate_id in bnd_obj.MATES
                 if ([mate_id, bnd_obj.ID] not in pairs)
             ]
+            if len(bnd_obj.MATES) == 0:
+                pairs += [[bnd_obj.ID, None]]
 
         self.pairs = pairs
         return self.pairs
@@ -80,68 +84,86 @@ class Converter:
         records = []
         chromosomes = [str(chrom) for chrom in list(range(1, 23))] + ["X", "Y"]
         chromosomes += ["chr" + chrom for chrom in chromosomes]
-
         for pair in self.pairs:
-            pair1 = self.bnds[pair[0]]
-            pair2 = self.bnds[pair[1]]
-
-            # only want the main chromosomes
-            if pair1.CHROM not in chromosomes or pair2.CHROM not in chromosomes:
-                pass
+            if not self.bnds[pair[0]].SGL:
+                record = self.create_paired_record(pair)
             else:
-                record = {}
-                CHROM1 = pair1.CHROM
-                CHROM2 = pair2.CHROM
-                STRAND1 = pair1.STRANDS[pair[1]]
-                STRAND2 = pair2.STRANDS[pair[0]]
-                record["chrom1"] = CHROM1
-                record["start1"] = str(int(pair1.POS) - 1)
-                record["end1"] = str(pair1.POS)
-                record["chrom2"] = CHROM2
-                record["start2"] = str(int(pair2.POS) - 1)
-                record["end2"] = str(pair2.POS)
-                record["sv_id"] = pair1.ID
-                record["pe_support"] = str(pair1.QUAL)
-                record["strand1"] = STRAND1
-                record["strand2"] = STRAND2
-
-                if CHROM1 == CHROM2:
-                    if STRAND1 == "+":
-                        if STRAND2 == "-":
-                            SVTYPE = "DEL"  # DEL = +-
-                        else:
-                            SVTYPE = "h2hINV"  # h2hINV = ++
-
-                    else:
-                        if STRAND2 == "+":
-                            SVTYPE = "DUP"  # DUP = -+
-                        else:
-                            SVTYPE = "t2tINV"  # t2tINV = --
-                else:
-                    SVTYPE = "TRA"
-
-                record["svclass"] = SVTYPE
-                record["svmethod"] = "Sentieon_TNscope"
-
-                records.append(record)
+                record = self.create_single_breakend_record(pair)
+            records.append(record)
 
         return records
+
+    def create_single_breakend_record(self, pair):
+        breakend = self.bnds[pair[0]]
+        record = {}
+        record["chrom1"] = breakend.CHROM
+        record["start1"] = int(breakend.POS) - 1
+        record["end1"] = breakend.calculate_bedpe_end()
+
+        record["chrom2"] = "."
+        record["start2"] = "-1"
+        record["end2"] = "-1"
+        record["sv_id"] = breakend.ID
+        record["pe_support"] = str((float(breakend.QUAL)))
+        if record["pe_support"].endswith(".0"):
+            record["pe_support"] = record["pe_support"][:-2]
+
+        record["strand1"] = breakend.STRANDS[None]
+        record["strand2"] = "."
+        record["svclass"] = "."
+
+        return record
+
+    def create_paired_record(self, pair):
+        record = {}
+        pair1 = self.bnds[pair[0]]
+        pair2 = self.bnds[pair[1]]
+        chrom1 = pair1.CHROM
+        chrom2 = pair2.CHROM
+        strand1 = pair1.STRANDS[pair[1]]
+        strand2 = pair2.STRANDS[pair[0]]
+        record["chrom1"] = chrom1
+        record["start1"] = pair1.calculate_bedpe_start()
+        record["end1"] = pair1.calculate_bedpe_end()
+        record["chrom2"] = chrom2
+        record["start2"] = pair2.calculate_bedpe_start()
+        record["end2"] = pair2.calculate_bedpe_end()
+        record["sv_id"] = pair1.ID
+        record["pe_support"] = str((float(pair1.QUAL)))
+        if record["pe_support"].endswith(".0"):
+            record["pe_support"] = record["pe_support"][:-2]
+        record["strand1"] = strand1
+        record["strand2"] = strand2
+        if chrom1 == chrom2:
+            if strand1 == "+":
+                if strand2 == "-":
+                    svtype = "DEL"  # DEL = +-
+                else:
+                    svtype = "h2hINV"  # h2hINV = ++
+            else:
+                if strand2 == "+":
+                    svtype = "DUP"  # DUP = -+
+                else:
+                    svtype = "t2tINV"  # t2tINV = --
+        else:
+            svtype = "TRA"
+
+        record["svclass"] = svtype
+        return record
 
 
 def vcf_scanner(vcf_input):
     vcf = vcf_parser.Vcf(vcf_input)
     bnd_dict = {}
-
-    for index, vnt_obj in enumerate(vcf.parse_variants()):
-        if vnt_obj.get_tag_value("SVTYPE") == "BND":
-            bnd_obj = Bnd(vnt_obj, index)
+    for vnt_obj in vcf.parse_variants():
+        if vnt_obj.get_tag_value(SVTYPE) == "BND":
+            bnd_obj = Bnd(vnt_obj)
             bnd_dict[bnd_obj.ID] = bnd_obj
         else:
             # so far, I have only seen SVTYPE=INS in tumor only analyses
             # we will only support paired breakpoints at this point with BEDPE
-            if vnt_obj.get_tag_value("SVTYPE") == "INS":
+            if vnt_obj.get_tag_value(SVTYPE) == "INS":
                 pass
-
     return bnd_dict
 
 
@@ -157,14 +179,12 @@ def main(args):
         "pe_support",
         "strand1",
         "strand2",
-        "svclass",
-        "svmethod",
+        "svclass"
     ]
     bnd_dict = vcf_scanner(args["inputvcf"])
     converter = Converter(bnd_dict)
     converter.pair_bnds()
     records = converter.create_bedpe_records()
-
     csv_file = args["outputBEDPE"]
     with open(csv_file, "w") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=bedpe_columns, delimiter="\t")
@@ -178,10 +198,7 @@ def main(args):
 ################################################
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="")
-
     parser.add_argument("-i", "--inputvcf", help="input SV vcf", required=True)
     parser.add_argument("-o", "--outputBEDPE", help="output bedPE", required=True)
-
     args = vars(parser.parse_args())
-
     main(args)
