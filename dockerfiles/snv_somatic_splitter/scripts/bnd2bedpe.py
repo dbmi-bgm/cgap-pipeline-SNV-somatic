@@ -5,10 +5,16 @@ from granite.lib import vcf_parser
 SVTYPE = "SVTYPE"
 MATEID = "MATEID"
 CIPOS = "CIPOS"
+BND = "BND"
 
 
 class Bnd:
     def __init__(self, vnt_obj):
+        """
+        Bnd represents a single breakend
+        @rtype: object
+        @param vnt_obj: Variant class object
+        """
         self.CHROM = vnt_obj.CHROM
         self.POS = vnt_obj.POS
         self.ID = vnt_obj.ID
@@ -18,7 +24,6 @@ class Bnd:
         self.INFO = vnt_obj.INFO
         self.MATES = self._mate_lister(vnt_obj)
         self.SGL = False  # single breakend
-        self.SVTYPE = vnt_obj.get_tag_value(SVTYPE)
         if len(self.MATES) > 0:
             strands = [
                 "-" if any(alt.startswith(x) for x in ["[", "]"]) else "+"
@@ -36,24 +41,42 @@ class Bnd:
         self.CIPOS = self._get_cipos(vnt_obj)
 
     def calculate_bedpe_end(self):
+        """
+        Calculate the one-based ending position of the end of the feature
+        @return: Position
+        """
         if self.CIPOS:
             return self.POS + abs(self.CIPOS[1])
         else:
             return self.POS
 
     def calculate_bedpe_start(self):
+        """
+        Calculate the zero-based starting position of the end of the feature
+        @return: Position
+        """
         if self.CIPOS:
             return self.POS - abs(self.CIPOS[0]) - 1
         else:
             return self.POS - 1
 
     def _mate_lister(self, vnt_obj):
+        """
+        List all mates of the variant
+        @param vnt_obj: Variant object
+        @return: List of the mates. If there are no mates, returns an empty list.
+        """
         try:
             return vnt_obj.get_tag_value(MATEID).split(",")
         except:
             return []
 
     def _get_cipos(self, vnt_obj):
+        """
+        Get values of the CIPOS field
+        @param vnt_obj: Variant objectt
+        @return: List of the CIPOS values
+        """
         try:
             return list(map(int, vnt_obj.get_tag_value(CIPOS).split(",")))
         except:
@@ -62,11 +85,19 @@ class Bnd:
 
 class Converter:
     def __init__(self, bnds):
+        """
+        Converter class is responsible for the conversion of SVs from VCF to BEDPE
+        @param bnds: a list of variant ID pairs that are mates
+        """
         self.bnd_ids = bnds.keys()
         self.bnds = bnds
         self.pairs = ()
 
     def pair_bnds(self):
+        """
+        Create a list of variant ID pairs that are mates
+        @rtype: object
+        """
         pairs = []
         for _, bnd_obj in self.bnds.items():
             pairs += [
@@ -81,6 +112,10 @@ class Converter:
         return self.pairs
 
     def create_bedpe_records(self):
+        """
+        Convert variants into the BEDPE format
+        @return:
+        """
         records = []
         chromosomes = [str(chrom) for chrom in list(range(1, 23))] + ["X", "Y"]
         chromosomes += ["chr" + chrom for chrom in chromosomes]
@@ -94,12 +129,16 @@ class Converter:
         return records
 
     def create_single_breakend_record(self, pair):
+        """
+        Convert a single breakend record into a dictionary with keys that correspond to the BEDPE format
+        @param pair:
+        @return: BEDPE record as dictionary
+        """
         breakend = self.bnds[pair[0]]
         record = {}
         record["chrom1"] = breakend.CHROM
         record["start1"] = int(breakend.POS) - 1
         record["end1"] = breakend.calculate_bedpe_end()
-
         record["chrom2"] = "."
         record["start2"] = "-1"
         record["end2"] = "-1"
@@ -115,6 +154,12 @@ class Converter:
         return record
 
     def create_paired_record(self, pair):
+        """
+        Convert mated SVs into a dictionary with keys that correspond to the BEDPE format
+
+        @param pair: Pair of variants IDs that are mates
+        @return:
+        """
         record = {}
         pair1 = self.bnds[pair[0]]
         pair2 = self.bnds[pair[1]]
@@ -153,17 +198,17 @@ class Converter:
 
 
 def vcf_scanner(vcf_input):
+    """
+    Scans a VCF file and converts BND SVs into Bnd objects
+    @param vcf_input: Path to the input VCF file
+    @return: Dictionary of Bnd objects. Keys are IDs of the variants, values are Bnd objects.
+    """
     vcf = vcf_parser.Vcf(vcf_input)
     bnd_dict = {}
     for vnt_obj in vcf.parse_variants():
-        if vnt_obj.get_tag_value(SVTYPE) == "BND":
+        if vnt_obj.get_tag_value(SVTYPE) == BND:
             bnd_obj = Bnd(vnt_obj)
             bnd_dict[bnd_obj.ID] = bnd_obj
-        else:
-            # so far, I have only seen SVTYPE=INS in tumor only analyses
-            # we will only support paired breakpoints at this point with BEDPE
-            if vnt_obj.get_tag_value(SVTYPE) == "INS":
-                pass
     return bnd_dict
 
 
