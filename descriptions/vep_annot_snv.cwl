@@ -14,7 +14,7 @@ hints:
 baseCommand: [vep-annot.sh]
 
 inputs:
-  - id: input_vcf
+  - id: input_somatic_vcf
     type: File
     inputBinding:
       position: 1

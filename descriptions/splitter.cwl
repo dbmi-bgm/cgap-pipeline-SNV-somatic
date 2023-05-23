@@ -14,7 +14,7 @@ hints:
 baseCommand: [python3, /usr/local/bin/somatic_sentieon_vcf_splitter.py, -o, snv, ind,  -o, bnd, --pass_only]
 
 inputs:
-  - id: input_vcf
+  - id: input_somatic_vcf
     type: File
     inputBinding:
       prefix: -i
