@@ -16,7 +16,7 @@ software:
 #############################################################
 input:
 
-  input_vcf:
+  input_somatic_vcf:
     argument_type: file.vcf_gz
 
 ## Output information #######################################

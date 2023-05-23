@@ -10,7 +10,7 @@ description: Downstream pipeline to annotate somatic variants and flag putative 
 #############################################################
 input:
 
-  input_vcf:
+  input_somatic_vcf:
     argument_type: file.vcf_gz
     dimensionality: 1
 
@@ -121,7 +121,7 @@ workflows:
     ####################################
     input:
 
-      input_vcf:
+      input_somatic_vcf:
         argument_type: file.vcf_gz
         scatter: 1
 
@@ -159,7 +159,7 @@ workflows:
     ####################################
     input:
 
-      input_vcf:
+      input_somatic_vcf:
         argument_type: file.vcf_gz
         source: splitter
         source_argument_name: indel_snv_pass
@@ -251,7 +251,7 @@ workflows:
     ####################################
     input:
 
-      input_vcf:
+      input_somatic_vcf:
         argument_type: file.vcf_gz
         source: vep_annot_somatic_snv
         source_argument_name: annotated_vcf
